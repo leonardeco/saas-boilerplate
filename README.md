@@ -19,6 +19,12 @@
 
 ---
 
+## Preview
+
+<img src=".github/assets/dashboard-preview.svg" alt="Dashboard Preview" width="100%"/>
+
+---
+
 ## Por que este boilerplate?
 
 Cada nuevo proyecto SaaS parte del mismo punto: auth, organizaciones, pagos, dashboard. Este boilerplate resuelve eso de forma robusta y escalable para que te concentres en lo que diferencia tu producto.

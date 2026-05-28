@@ -1,0 +1,286 @@
+<svg width="1280" height="800" viewBox="0 0 1280 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="sidebarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="cardGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eff6ff"/>
+      <stop offset="100%" style="stop-color:#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="stripeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f3ff"/>
+      <stop offset="100%" style="stop-color:#ede9fe"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0fdf4"/>
+      <stop offset="100%" style="stop-color:#dcfce7"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#00000012"/>
+    </filter>
+    <filter id="shadowSm" x="-5%" y="-5%" width="115%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#0000000a"/>
+    </filter>
+    <clipPath id="roundedWindow">
+      <rect width="1280" height="800" rx="12"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundedWindow)">
+
+    <!-- Window chrome / browser bar -->
+    <rect width="1280" height="44" fill="#e2e8f0"/>
+    <circle cx="20" cy="22" r="6" fill="#f87171"/>
+    <circle cx="40" cy="22" r="6" fill="#fbbf24"/>
+    <circle cx="60" cy="22" r="6" fill="#4ade80"/>
+    <!-- URL bar -->
+    <rect x="160" y="10" width="540" height="24" rx="12" fill="white" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="430" y="26" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">localhost:3000/dashboard</text>
+    <!-- Browser icons -->
+    <rect x="1220" y="14" width="16" height="16" rx="3" fill="#94a3b8"/>
+    <rect x="1242" y="14" width="16" height="16" rx="3" fill="#94a3b8"/>
+
+    <!-- App background -->
+    <rect x="0" y="44" width="1280" height="756" fill="url(#bgGrad)"/>
+
+    <!-- ─── SIDEBAR ─── -->
+    <rect x="0" y="44" width="240" height="756" fill="url(#sidebarGrad)" filter="url(#shadowSm)"/>
+    <rect x="239" y="44" width="1" height="756" fill="#e2e8f0"/>
+
+    <!-- Sidebar brand -->
+    <rect x="0" y="44" width="240" height="60" fill="white"/>
+    <rect x="239" y="44" width="1" height="60" fill="#e2e8f0"/>
+    <rect x="0" y="103" width="240" height="1" fill="#f1f5f9"/>
+    <!-- Brand logo dot -->
+    <rect x="20" y="61" width="28" height="28" rx="8" fill="url(#brandGrad)"/>
+    <text x="34" y="80" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="white" font-weight="700" text-anchor="middle">S</text>
+    <text x="60" y="74" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="#1e3a8a" font-weight="700">SaaS Boilerplate</text>
+    <text x="60" y="88" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#94a3b8">My Workspace</text>
+
+    <!-- Nav items -->
+    <!-- Dashboard (active) -->
+    <rect x="12" y="116" width="216" height="36" rx="8" fill="#eff6ff"/>
+    <rect x="20" y="128" width="3" height="12" rx="1.5" fill="#2563eb"/>
+    <!-- grid icon -->
+    <rect x="32" y="127" width="5" height="5" rx="1" fill="#2563eb"/>
+    <rect x="39" y="127" width="5" height="5" rx="1" fill="#2563eb"/>
+    <rect x="32" y="134" width="5" height="5" rx="1" fill="#2563eb"/>
+    <rect x="39" y="134" width="5" height="5" rx="1" fill="#2563eb"/>
+    <text x="54" y="137" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#2563eb" font-weight="600">Dashboard</text>
+
+    <!-- Members -->
+    <rect x="32" y="168" width="5" height="10" rx="2.5" fill="#94a3b8"/>
+    <circle cx="34.5" cy="162" r="3" fill="#94a3b8"/>
+    <rect x="40" y="168" width="5" height="10" rx="2.5" fill="#94a3b8"/>
+    <circle cx="42.5" cy="162" r="3" fill="#94a3b8"/>
+    <text x="54" y="173" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#64748b">Miembros</text>
+
+    <!-- Settings -->
+    <circle cx="36" cy="209" r="5" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+    <circle cx="36" cy="209" r="2" fill="#94a3b8"/>
+    <text x="54" y="213" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#64748b">Configuracion</text>
+
+    <!-- Billing -->
+    <rect x="30" y="234" width="12" height="9" rx="2" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="30" y1="238" x2="42" y2="238" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="54" y="243" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#64748b">Facturacion</text>
+
+    <!-- Sidebar divider -->
+    <rect x="12" y="268" width="216" height="1" fill="#f1f5f9"/>
+
+    <!-- Workspaces section -->
+    <text x="20" y="288" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#94a3b8" font-weight="600" letter-spacing="0.5">WORKSPACES</text>
+    <!-- Workspace item -->
+    <rect x="12" y="296" width="216" height="32" rx="6" fill="#f8fafc"/>
+    <rect x="20" y="304" width="16" height="16" rx="4" fill="#dbeafe"/>
+    <text x="28" y="316" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#2563eb" font-weight="700" text-anchor="middle">L</text>
+    <text x="44" y="316" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#374151" font-weight="500">Leonardo's Workspace</text>
+    <rect x="190" y="304" width="30" height="16" rx="8" fill="#dcfce7"/>
+    <text x="205" y="315" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#16a34a" font-weight="600" text-anchor="middle">PRO</text>
+
+    <!-- User section at bottom -->
+    <rect x="0" y="748" width="240" height="52" fill="white"/>
+    <rect x="0" y="748" width="240" height="1" fill="#f1f5f9"/>
+    <circle cx="36" cy="774" r="16" fill="url(#brandGrad)"/>
+    <text x="36" y="779" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="white" font-weight="700" text-anchor="middle">LG</text>
+    <text x="60" y="770" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#374151" font-weight="600">Leonardo Guzman</text>
+    <text x="60" y="784" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#94a3b8">leonardecojt@gmail.com</text>
+
+    <!-- ─── MAIN CONTENT ─── -->
+
+    <!-- Top bar -->
+    <rect x="240" y="44" width="1040" height="56" fill="white"/>
+    <rect x="240" y="99" width="1040" height="1" fill="#f1f5f9"/>
+    <text x="268" y="76" font-family="'Segoe UI', system-ui, sans-serif" font-size="20" fill="#0f172a" font-weight="700">Dashboard</text>
+    <text x="268" y="93" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#94a3b8">Tus organizaciones y estado actual</text>
+    <!-- Top bar actions -->
+    <rect x="1100" y="60" width="140" height="32" rx="8" fill="url(#brandGrad)"/>
+    <text x="1170" y="80" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="white" font-weight="600" text-anchor="middle">+ Nueva org</text>
+
+    <!-- ─── STAT CARDS ─── -->
+    <!-- Card 1: Organizaciones -->
+    <rect x="268" y="120" width="290" height="110" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <rect x="268" y="120" width="290" height="4" rx="2" fill="url(#brandGrad)"/>
+    <text x="290" y="156" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">ORGANIZACIONES</text>
+    <text x="290" y="195" font-family="'Segoe UI', system-ui, sans-serif" font-size="42" fill="#0f172a" font-weight="800">3</text>
+    <rect x="504" y="148" width="32" height="32" rx="8" fill="#eff6ff"/>
+    <rect x="514" y="155" width="5" height="5" rx="1" fill="#2563eb"/>
+    <rect x="521" y="155" width="5" height="5" rx="1" fill="#2563eb"/>
+    <rect x="514" y="162" width="5" height="5" rx="1" fill="#2563eb"/>
+    <rect x="521" y="162" width="5" height="5" rx="1" fill="#2563eb"/>
+    <text x="290" y="218" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#22c55e">↑ 2 este mes</text>
+
+    <!-- Card 2: Plan activo -->
+    <rect x="578" y="120" width="290" height="110" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <rect x="578" y="120" width="290" height="4" rx="2" fill="#7c3aed"/>
+    <text x="600" y="156" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">PLAN ACTIVO</text>
+    <text x="600" y="195" font-family="'Segoe UI', system-ui, sans-serif" font-size="42" fill="#0f172a" font-weight="800">PRO</text>
+    <rect x="814" y="148" width="32" height="32" rx="8" fill="#f5f3ff"/>
+    <rect x="820" y="154" width="14" height="10" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+    <line x1="820" y1="158" x2="834" y2="158" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="600" y="218" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">Renovacion: 27 Jun 2026</text>
+
+    <!-- Card 3: Miembros -->
+    <rect x="888" y="120" width="290" height="110" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <rect x="888" y="120" width="290" height="4" rx="2" fill="#059669"/>
+    <text x="910" y="156" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8" font-weight="600" letter-spacing="0.5">TU ROL</text>
+    <text x="910" y="195" font-family="'Segoe UI', system-ui, sans-serif" font-size="32" fill="#0f172a" font-weight="800">OWNER</text>
+    <rect x="1124" y="148" width="32" height="32" rx="8" fill="#f0fdf4"/>
+    <circle cx="1137" cy="158" r="4" fill="none" stroke="#059669" stroke-width="1.5"/>
+    <rect x="1130" y="165" width="14" height="8" rx="3" fill="none" stroke="#059669" stroke-width="1.5"/>
+    <text x="910" y="218" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#22c55e">Acceso completo</text>
+
+    <!-- ─── WORKSPACES TABLE ─── -->
+    <text x="268" y="262" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" fill="#0f172a" font-weight="700">Workspaces</text>
+    <text x="268" y="278" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#94a3b8">Todas tus organizaciones activas</text>
+
+    <!-- Table container -->
+    <rect x="268" y="290" width="910" height="280" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+
+    <!-- Table header -->
+    <rect x="268" y="290" width="910" height="40" rx="12" fill="#f8fafc"/>
+    <rect x="268" y="318" width="910" height="12" fill="#f8fafc"/>
+    <rect x="268" y="330" width="910" height="1" fill="#f1f5f9"/>
+    <text x="300" y="315" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" font-weight="600" letter-spacing="0.3">ORGANIZACION</text>
+    <text x="640" y="315" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" font-weight="600" letter-spacing="0.3">PLAN</text>
+    <text x="780" y="315" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" font-weight="600" letter-spacing="0.3">ROL</text>
+    <text x="950" y="315" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" font-weight="600" letter-spacing="0.3" text-anchor="middle">MIEMBROS</text>
+    <text x="1100" y="315" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" font-weight="600" letter-spacing="0.3" text-anchor="middle">ESTADO</text>
+
+    <!-- Row 1 -->
+    <rect x="268" y="330" width="910" height="60" fill="white"/>
+    <rect x="268" y="389" width="910" height="1" fill="#f8fafc"/>
+    <rect x="290" y="348" width="36" height="36" rx="10" fill="#dbeafe"/>
+    <text x="308" y="371" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" fill="#2563eb" font-weight="800" text-anchor="middle">L</text>
+    <text x="338" y="358" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#0f172a" font-weight="600">Leonardo's Workspace</text>
+    <text x="338" y="374" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">leonardo-workspace · creado hace 2 dias</text>
+    <rect x="620" y="350" width="52" height="22" rx="11" fill="#f5f3ff"/>
+    <text x="646" y="365" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#7c3aed" font-weight="700" text-anchor="middle">PRO</text>
+    <rect x="760" y="350" width="58" height="22" rx="11" fill="#eff6ff"/>
+    <text x="789" y="365" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#2563eb" font-weight="600" text-anchor="middle">OWNER</text>
+    <text x="950" y="365" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="#0f172a" font-weight="700" text-anchor="middle">4</text>
+    <rect x="1060" y="350" width="60" height="22" rx="11" fill="#f0fdf4"/>
+    <circle cx="1074" cy="361" r="4" fill="#22c55e"/>
+    <text x="1092" y="365" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#16a34a" font-weight="600">Activo</text>
+
+    <!-- Row 2 -->
+    <rect x="268" y="390" width="910" height="60" fill="white"/>
+    <rect x="268" y="449" width="910" height="1" fill="#f8fafc"/>
+    <rect x="290" y="408" width="36" height="36" rx="10" fill="#fce7f3"/>
+    <text x="308" y="431" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" fill="#db2777" font-weight="800" text-anchor="middle">G</text>
+    <text x="338" y="418" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#0f172a" font-weight="600">GanancIA</text>
+    <text x="338" y="434" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">ganancia-app · creado hace 5 dias</text>
+    <rect x="620" y="410" width="70" height="22" rx="11" fill="#fef3c7"/>
+    <text x="655" y="425" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#d97706" font-weight="700" text-anchor="middle">ENTERPRISE</text>
+    <rect x="760" y="410" width="58" height="22" rx="11" fill="#eff6ff"/>
+    <text x="789" y="425" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#2563eb" font-weight="600" text-anchor="middle">OWNER</text>
+    <text x="950" y="425" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="#0f172a" font-weight="700" text-anchor="middle">12</text>
+    <rect x="1060" y="410" width="60" height="22" rx="11" fill="#f0fdf4"/>
+    <circle cx="1074" cy="421" r="4" fill="#22c55e"/>
+    <text x="1092" y="425" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#16a34a" font-weight="600">Activo</text>
+
+    <!-- Row 3 -->
+    <rect x="268" y="450" width="910" height="60" fill="white"/>
+    <rect x="268" y="509" width="910" height="1" fill="#f8fafc"/>
+    <rect x="290" y="468" width="36" height="36" rx="10" fill="#dcfce7"/>
+    <text x="308" y="491" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" fill="#16a34a" font-weight="800" text-anchor="middle">F</text>
+    <text x="338" y="478" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#0f172a" font-weight="600">LEOFIT Store</text>
+    <text x="338" y="494" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">leofit-store · creado hace 12 dias</text>
+    <rect x="620" y="470" width="52" height="22" rx="11" fill="#f1f5f9"/>
+    <text x="646" y="485" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#64748b" font-weight="700" text-anchor="middle">FREE</text>
+    <rect x="760" y="470" width="46" height="22" rx="11" fill="#f0fdf4"/>
+    <text x="783" y="485" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#16a34a" font-weight="600" text-anchor="middle">ADMIN</text>
+    <text x="950" y="485" font-family="'Segoe UI', system-ui, sans-serif" font-size="14" fill="#0f172a" font-weight="700" text-anchor="middle">1</text>
+    <rect x="1060" y="470" width="60" height="22" rx="11" fill="#f0fdf4"/>
+    <circle cx="1074" cy="481" r="4" fill="#22c55e"/>
+    <text x="1092" y="485" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#16a34a" font-weight="600">Activo</text>
+
+    <!-- Row 4 - faded/empty state hint -->
+    <rect x="268" y="510" width="910" height="60" fill="white" rx="0"/>
+    <rect x="290" y="528" width="36" height="36" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 2"/>
+    <text x="338" y="543" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#cbd5e1">Nueva organizacion...</text>
+    <rect x="620" y="530" width="52" height="22" rx="11" fill="#f8fafc"/>
+    <rect x="760" y="530" width="52" height="22" rx="11" fill="#f8fafc"/>
+
+    <!-- ─── BILLING CARD (right panel) ─── -->
+    <rect x="1198" y="290" width="0" height="0"/>
+
+    <!-- ─── QUICK ACTIONS ─── -->
+    <text x="268" y="604" font-family="'Segoe UI', system-ui, sans-serif" font-size="16" fill="#0f172a" font-weight="700">Acciones rapidas</text>
+
+    <!-- Action card 1 -->
+    <rect x="268" y="616" width="280" height="90" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <rect x="284" y="632" width="36" height="36" rx="10" fill="#eff6ff"/>
+    <text x="302" y="655" font-family="'Segoe UI', system-ui, sans-serif" font-size="18" text-anchor="middle">👥</text>
+    <text x="332" y="647" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#0f172a" font-weight="600">Invitar miembro</text>
+    <text x="332" y="662" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">Agrega a tu equipo</text>
+    <rect x="284" y="678" width="80" height="20" rx="10" fill="#eff6ff"/>
+    <text x="324" y="691" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#2563eb" font-weight="600" text-anchor="middle">Ir a Miembros →</text>
+
+    <!-- Action card 2 -->
+    <rect x="568" y="616" width="280" height="90" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <rect x="584" y="632" width="36" height="36" rx="10" fill="#f5f3ff"/>
+    <text x="602" y="655" font-family="'Segoe UI', system-ui, sans-serif" font-size="18" text-anchor="middle">💳</text>
+    <text x="632" y="647" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#0f172a" font-weight="600">Mejorar plan</text>
+    <text x="632" y="662" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">Desbloquea mas features</text>
+    <rect x="584" y="678" width="90" height="20" rx="10" fill="#f5f3ff"/>
+    <text x="629" y="691" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#7c3aed" font-weight="600" text-anchor="middle">Ver planes →</text>
+
+    <!-- Action card 3 -->
+    <rect x="868" y="616" width="280" height="90" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <rect x="884" y="632" width="36" height="36" rx="10" fill="#f0fdf4"/>
+    <text x="902" y="655" font-family="'Segoe UI', system-ui, sans-serif" font-size="18" text-anchor="middle">⚙️</text>
+    <text x="932" y="647" font-family="'Segoe UI', system-ui, sans-serif" font-size="13" fill="#0f172a" font-weight="600">Configuracion</text>
+    <text x="932" y="662" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#94a3b8">Personaliza tu org</text>
+    <rect x="884" y="678" width="100" height="20" rx="10" fill="#f0fdf4"/>
+    <text x="934" y="691" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#059669" font-weight="600" text-anchor="middle">Configurar →</text>
+
+    <!-- ─── ACTIVITY / RECENT ─── -->
+    <rect x="268" y="720" width="910" height="56" rx="12" fill="white" filter="url(#shadowSm)" stroke="#f1f5f9" stroke-width="1"/>
+    <circle cx="292" cy="748" r="8" fill="#dbeafe"/>
+    <text x="292" y="753" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#2563eb" font-weight="700" text-anchor="middle">LG</text>
+    <text x="308" y="745" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#374151" font-weight="500">Te uniste a <tspan font-weight="700">GanancIA</tspan></text>
+    <text x="308" y="759" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#94a3b8">hace 5 minutos</text>
+    <circle cx="552" cy="748" r="8" fill="#fce7f3"/>
+    <text x="552" y="753" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#db2777" font-weight="700" text-anchor="middle">S</text>
+    <text x="568" y="745" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#374151" font-weight="500"><tspan font-weight="700">Sara</tspan> fue invitada a LEOFIT</text>
+    <text x="568" y="759" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#94a3b8">hace 1 hora</text>
+    <circle cx="812" cy="748" r="8" fill="#dcfce7"/>
+    <text x="812" y="753" font-family="'Segoe UI', system-ui, sans-serif" font-size="9" fill="#16a34a" font-weight="700" text-anchor="middle">✓</text>
+    <text x="828" y="745" font-family="'Segoe UI', system-ui, sans-serif" font-size="12" fill="#374151" font-weight="500">Pago <tspan font-weight="700">PRO</tspan> procesado exitosamente</text>
+    <text x="828" y="759" font-family="'Segoe UI', system-ui, sans-serif" font-size="10" fill="#94a3b8">hace 2 horas</text>
+
+    <!-- Window border -->
+    <rect x="0" y="0" width="1280" height="800" rx="12" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+
+  </g>
+</svg>
