@@ -1,8 +1,8 @@
 <div align="center">
 
-# SaaS Boilerplate
+<img src=".github/assets/banner.svg" alt="SaaS Boilerplate" width="100%"/>
 
-**Production-ready monorepo para lanzar cualquier SaaS en dias, no semanas.**
+<br/>
 
 [![Next.js](https://img.shields.io/badge/Next.js_15-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Fastify](https://img.shields.io/badge/Fastify_5-000000?style=for-the-badge&logo=fastify)](https://fastify.dev)
