@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: ["main"]
+
+jobs:
+  deploy-render:
+    name: Trigger Render deploy
+    runs-on: ubuntu-latest
+    # Only deploy when CI passed
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Deploy API to Render
+        if: vars.RENDER_API_DEPLOY_HOOK != ''
+        run: |
+          curl -s --fail-with-body -X POST "${{ vars.RENDER_API_DEPLOY_HOOK }}"
+          echo "✅ API deploy triggered"
+
+      - name: Deploy Web to Render
+        if: vars.RENDER_WEB_DEPLOY_HOOK != ''
+        run: |
+          curl -s --fail-with-body -X POST "${{ vars.RENDER_WEB_DEPLOY_HOOK }}"
+          echo "✅ Web deploy triggered"
+
+      - name: Skip (no deploy hooks configured)
+        if: vars.RENDER_API_DEPLOY_HOOK == '' && vars.RENDER_WEB_DEPLOY_HOOK == ''
+        run: |
+          echo "ℹ️  No RENDER_API_DEPLOY_HOOK or RENDER_WEB_DEPLOY_HOOK vars set."
+          echo "   Add them in GitHub → Settings → Variables to enable auto-deploy."
+          echo "   Get the hook URLs from Render → Service → Settings → Deploy Hook."

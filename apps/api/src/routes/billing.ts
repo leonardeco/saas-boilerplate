@@ -5,7 +5,17 @@ import {
   handleStripeWebhook,
 } from "../services/billing.service.js";
 
+function stripeGuard(app: FastifyInstance) {
+  app.addHook("preHandler", async (_req, reply) => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      reply.code(503).send({ error: "Billing not configured on this server" });
+    }
+  });
+}
+
 export async function billingRoutes(app: FastifyInstance) {
+  stripeGuard(app);
+
   // POST /billing/checkout — create Stripe Checkout session
   app.post<{ Body: { organizationId: string; priceId: string } }>(
     "/checkout",

@@ -1,0 +1,102 @@
+## Render Blueprint — https://render.com/docs/blueprint-spec
+## Deploy with: connect this repo in the Render dashboard → "New Blueprint Instance"
+##
+## After first deploy, set these env vars in the Render dashboard:
+##   saas-api  → CORS_ORIGIN, WEB_URL     (e.g. https://saas-web.onrender.com)
+##   saas-web  → NEXT_PUBLIC_API_URL      (e.g. https://saas-api.onrender.com)
+##
+## Optional (leave blank to disable):
+##   saas-api  → STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+##   saas-api  → RESEND_API_KEY, EMAIL_FROM
+##   saas-api  → GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+##   saas-api  → GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+
+databases:
+  - name: saas-db
+    plan: free
+    databaseName: saas_boilerplate
+    user: saas_admin
+
+services:
+  # ─── API (Fastify) ──────────────────────────────────────────────────────────
+  - type: web
+    name: saas-api
+    runtime: docker
+    dockerfilePath: apps/api/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saas-db
+          property: connectionString
+
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+
+      - key: NODE_ENV
+        value: production
+
+      - key: API_HOST
+        value: 0.0.0.0
+
+      # Cross-origin — set to your Web service URL after first deploy
+      - key: CORS_ORIGIN
+        sync: false
+
+      - key: WEB_URL
+        sync: false
+
+      # Stripe — optional, billing routes return 503 when not set
+      - key: STRIPE_SECRET_KEY
+        sync: false
+
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+
+      # Email — optional, falls back to Ethereal preview emails in dev
+      - key: RESEND_API_KEY
+        sync: false
+
+      - key: EMAIL_FROM
+        sync: false
+
+      # OAuth — optional, those login buttons are hidden when not set
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
+      - key: GITHUB_CLIENT_ID
+        sync: false
+
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+
+  # ─── Web (Next.js) ──────────────────────────────────────────────────────────
+  - type: web
+    name: saas-web
+    runtime: docker
+    dockerfilePath: apps/web/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      # Share the same JWT secret so the Edge middleware can verify API tokens
+      - key: JWT_ACCESS_SECRET
+        fromService:
+          type: web
+          name: saas-api
+          envVarKey: JWT_ACCESS_SECRET
+
+      # Set to your API service URL after first deploy
+      # e.g. https://saas-api.onrender.com
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+
+      - key: NODE_ENV
+        value: production

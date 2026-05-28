@@ -1,0 +1,13 @@
+# Railway config for the API service
+# In the Railway dashboard: set "Root Directory" to / and "Dockerfile Path" to apps/api/Dockerfile
+# See: https://docs.railway.com/deploy/dockerfiles
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "apps/api/Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

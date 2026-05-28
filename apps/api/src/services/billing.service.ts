@@ -2,7 +2,10 @@ import Stripe from "stripe";
 import { db, subscriptions, plans, organizations } from "@saas/db";
 import { eq } from "drizzle-orm";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe(): Stripe {
+  if (!process.env.STRIPE_SECRET_KEY) throw new Error("STRIPE_NOT_CONFIGURED");
+  return new Stripe(process.env.STRIPE_SECRET_KEY);
+}
 
 export async function createCheckoutSession(
   orgId: string,
@@ -11,7 +14,7 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string,
 ) {
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: [{ price: priceId, quantity: 1 }],
@@ -30,7 +33,7 @@ export async function createBillingPortalSession(orgId: string, returnUrl: strin
 
   if (!sub?.stripeCustomerId) throw new Error("NO_SUBSCRIPTION");
 
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: sub.stripeCustomerId,
     return_url: returnUrl,
   });
@@ -39,10 +42,11 @@ export async function createBillingPortalSession(orgId: string, returnUrl: strin
 }
 
 export async function handleStripeWebhook(rawBody: Buffer, signature: string) {
-  const event = stripe.webhooks.constructEvent(
+  if (!process.env.STRIPE_WEBHOOK_SECRET) throw new Error("STRIPE_NOT_CONFIGURED");
+  const event = getStripe().webhooks.constructEvent(
     rawBody,
     signature,
-    process.env.STRIPE_WEBHOOK_SECRET!,
+    process.env.STRIPE_WEBHOOK_SECRET,
   );
 
   switch (event.type) {

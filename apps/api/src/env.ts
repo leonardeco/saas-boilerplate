@@ -6,11 +6,13 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32, "JWT_REFRESH_SECRET debe tener al menos 32 caracteres"),
   JWT_ACCESS_EXPIRES: z.string().default("15m"),
   JWT_REFRESH_EXPIRES: z.string().default("7d"),
-  API_PORT: z.coerce.number().default(3001),
+  // PORT is the standard env var on Render/Railway/Heroku; API_PORT is the fallback
+  API_PORT: z.coerce.number().default(parseInt(process.env.PORT ?? "3001", 10)),
   API_HOST: z.string().default("0.0.0.0"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
-  STRIPE_SECRET_KEY: z.string().startsWith("sk_", "STRIPE_SECRET_KEY debe empezar con sk_"),
-  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_", "STRIPE_WEBHOOK_SECRET debe empezar con whsec_"),
+  // Stripe — optional; billing routes return 503 when not configured
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_").optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
   // Email — Resend (produccion) o Ethereal auto (desarrollo sin config)
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().email().default("no-reply@saas-boilerplate.com"),
