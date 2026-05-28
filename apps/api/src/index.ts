@@ -1,4 +1,6 @@
+import "./env.js"; // validate env vars before anything else
 import Fastify from "fastify";
+import { helmetPlugin } from "./plugins/helmet.js";
 import { corsPlugin } from "./plugins/cors.js";
 import { jwtPlugin } from "./plugins/jwt.js";
 import { swaggerPlugin } from "./plugins/swagger.js";
@@ -11,6 +13,7 @@ import { billingRoutes } from "./routes/billing.js";
 const app = Fastify({ logger: true });
 
 // Plugins
+await app.register(helmetPlugin);
 await app.register(corsPlugin);
 await app.register(rateLimitPlugin);
 await app.register(swaggerPlugin);
@@ -24,8 +27,9 @@ await app.register(billingRoutes, { prefix: "/billing" });
 
 app.get("/health", async () => ({ status: "ok", timestamp: new Date().toISOString() }));
 
-const port = Number(process.env.API_PORT ?? 3001);
-const host = process.env.API_HOST ?? "0.0.0.0";
+import { env } from "./env.js";
+const port = env.API_PORT;
+const host = env.API_HOST;
 
 try {
   await app.listen({ port, host });
