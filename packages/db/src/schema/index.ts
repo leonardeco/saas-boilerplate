@@ -3,3 +3,4 @@ export * from "./organizations.js";
 export * from "./subscriptions.js";
 export * from "./tokens.js";
 export * from "./oauth.js";
+export * from "./password-reset.js";

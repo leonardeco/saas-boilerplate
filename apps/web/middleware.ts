@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const PUBLIC_ROUTES = ["/", "/login", "/register"];
-const AUTH_ROUTES = ["/login", "/register"];
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
+const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password"];
 const DASHBOARD_PREFIX = ["/dashboard", "/members", "/settings", "/billing"];
 
 function isDashboardRoute(pathname: string) {

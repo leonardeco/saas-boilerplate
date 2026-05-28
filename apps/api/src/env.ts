@@ -11,6 +11,14 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   STRIPE_SECRET_KEY: z.string().startsWith("sk_", "STRIPE_SECRET_KEY debe empezar con sk_"),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_", "STRIPE_WEBHOOK_SECRET debe empezar con whsec_"),
+  // Email — Resend (produccion) o Ethereal auto (desarrollo sin config)
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().email().default("no-reply@saas-boilerplate.com"),
+  // SMTP alternativo (si no usas Resend ni quieres Ethereal)
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
   // OAuth — opcionales, la app arranca sin ellos pero deshabilita esos providers
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),

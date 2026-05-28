@@ -3,6 +3,7 @@ import { relations } from "drizzle-orm";
 import { organizationMembers } from "./organizations.js";
 import { refreshTokens } from "./tokens.js";
 import { oauthAccounts } from "./oauth.js";
+import { passwordResetTokens } from "./password-reset.js";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -19,6 +20,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   memberships: many(organizationMembers),
   refreshTokens: many(refreshTokens),
   oauthAccounts: many(oauthAccounts),
+  passwordResetTokens: many(passwordResetTokens),
 }));
 
 export type User = typeof users.$inferSelect;
