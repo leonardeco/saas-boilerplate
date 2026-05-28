@@ -125,11 +125,17 @@ railway init
 
 ### Variables mínimas (API)
 
+Genera los secretos JWT con:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
-DATABASE_URL       = <del addon PostgreSQL>
-JWT_ACCESS_SECRET  = <openssl rand -base64 32>
-JWT_REFRESH_SECRET = <openssl rand -base64 32>
+
+```
+DATABASE_URL       = <del addon PostgreSQL — Internal Connection String>
+JWT_ACCESS_SECRET  = <resultado del comando anterior>
+JWT_REFRESH_SECRET = <resultado del comando anterior (ejecútalo de nuevo)>
 NODE_ENV           = production
+API_HOST           = 0.0.0.0
 CORS_ORIGIN        = https://app.ganancia.app
 WEB_URL            = https://app.ganancia.app
 ```

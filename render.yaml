@@ -9,6 +9,10 @@
 ##   CNAME  app  →  saas-web.onrender.com
 ##   CNAME  api  →  saas-api.onrender.com
 ##
+## Si el Blueprint no genera JWT_ACCESS_SECRET / JWT_REFRESH_SECRET automáticamente,
+## agrégalos manualmente en Render → saas-api → Environment con:
+##   node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+##
 ## Variables que requieren acción manual después del primer deploy (sync: false):
 ##   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
 ##   RESEND_API_KEY
