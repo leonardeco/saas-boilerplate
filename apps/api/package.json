@@ -25,7 +25,7 @@
     "@saas/db": "*",
     "bcryptjs": "^2.4.3",
     "fastify": "^5.2.1",
-    "stripe": "^17.4.0",
+    "stripe": "^22.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
