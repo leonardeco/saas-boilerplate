@@ -6,6 +6,7 @@ import { jwtPlugin } from "./plugins/jwt.js";
 import { swaggerPlugin } from "./plugins/swagger.js";
 import { rateLimitPlugin } from "./plugins/rateLimit.js";
 import { authRoutes } from "./routes/auth.js";
+import { oauthRoutes } from "./routes/oauth.js";
 import { organizationsRoutes } from "./routes/organizations.js";
 import { membersRoutes } from "./routes/members.js";
 import { billingRoutes } from "./routes/billing.js";
@@ -21,6 +22,7 @@ await app.register(jwtPlugin);
 
 // Routes
 await app.register(authRoutes, { prefix: "/auth" });
+await app.register(oauthRoutes);
 await app.register(organizationsRoutes, { prefix: "/organizations" });
 await app.register(membersRoutes, { prefix: "/organizations" });
 await app.register(billingRoutes, { prefix: "/billing" });

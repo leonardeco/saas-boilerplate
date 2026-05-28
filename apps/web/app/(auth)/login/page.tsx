@@ -1,11 +1,14 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { OAuthButtons } from "@/components/ui/OAuthButtons";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const oauthError = searchParams.get("error");
+  const [error, setError] = useState(oauthError ?? "");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -22,9 +25,10 @@ export default function LoginPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error ?? "Error al iniciar sesion");
+        throw new Error(data.error ?? "Credenciales incorrectas");
       }
-      router.push("/dashboard");
+      const next = searchParams.get("next") ?? "/dashboard";
+      router.push(next);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error desconocido");
     } finally {
@@ -38,7 +42,10 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Bienvenido de nuevo</h1>
         <p className="text-gray-500 text-sm mb-6">Inicia sesion en tu cuenta</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* OAuth buttons */}
+        <OAuthButtons />
+
+        <form onSubmit={handleSubmit} className="space-y-4 mt-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
@@ -50,7 +57,12 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contrasena</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">Contrasena</label>
+              <Link href="/forgot-password" className="text-xs text-brand-600 hover:underline">
+                Olvidaste tu contrasena?
+              </Link>
+            </div>
             <input
               name="password"
               type="password"
@@ -60,21 +72,25 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <p className="text-red-600 text-sm">{decodeURIComponent(error)}</p>
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-lg transition disabled:opacity-50"
           >
-            {loading ? "Cargando..." : "Iniciar sesion"}
+            {loading ? "Iniciando sesion..." : "Iniciar sesion"}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
           No tienes cuenta?{" "}
           <Link href="/register" className="text-brand-600 font-medium hover:underline">
-            Registrate
+            Registrate gratis
           </Link>
         </p>
       </div>

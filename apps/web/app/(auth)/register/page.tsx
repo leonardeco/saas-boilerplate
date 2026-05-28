@@ -1,11 +1,14 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { OAuthButtons } from "@/components/ui/OAuthButtons";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const oauthError = searchParams.get("error");
+  const [error, setError] = useState(oauthError ?? "");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -13,16 +16,20 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
     const form = new FormData(e.currentTarget);
+    const password = form.get("password") as string;
+    const confirm = form.get("confirm") as string;
+
+    if (password !== confirm) {
+      setError("Las contrasenas no coinciden");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.get("name"),
-          email: form.get("email"),
-          password: form.get("password"),
-        }),
+        body: JSON.stringify({ name: form.get("name"), email: form.get("email"), password }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -42,9 +49,12 @@ export default function RegisterPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Crear cuenta</h1>
         <p className="text-gray-500 text-sm mb-6">Empieza gratis, sin tarjeta de credito</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* OAuth buttons */}
+        <OAuthButtons />
+
+        <form onSubmit={handleSubmit} className="space-y-4 mt-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
             <input
               name="name"
               type="text"
@@ -75,8 +85,23 @@ export default function RegisterPage() {
               placeholder="Minimo 8 caracteres"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar contrasena</label>
+            <input
+              name="confirm"
+              type="password"
+              required
+              minLength={8}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="Repite tu contrasena"
+            />
+          </div>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <p className="text-red-600 text-sm">{decodeURIComponent(error)}</p>
+            </div>
+          )}
 
           <button
             type="submit"
@@ -92,6 +117,12 @@ export default function RegisterPage() {
           <Link href="/login" className="text-brand-600 font-medium hover:underline">
             Inicia sesion
           </Link>
+        </p>
+
+        <p className="text-center text-xs text-gray-400 mt-4">
+          Al registrarte aceptas nuestros{" "}
+          <Link href="/terms" className="underline">Terminos</Link> y{" "}
+          <Link href="/privacy" className="underline">Privacidad</Link>.
         </p>
       </div>
     </div>

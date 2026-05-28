@@ -11,6 +11,12 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   STRIPE_SECRET_KEY: z.string().startsWith("sk_", "STRIPE_SECRET_KEY debe empezar con sk_"),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_", "STRIPE_WEBHOOK_SECRET debe empezar con whsec_"),
+  // OAuth — opcionales, la app arranca sin ellos pero deshabilita esos providers
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
+  WEB_URL: z.string().url().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
