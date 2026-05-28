@@ -5,6 +5,7 @@
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:prod": "node --import tsx/esm src/migrate.ts",
     "db:studio": "drizzle-kit studio"
   },
   "exports": {

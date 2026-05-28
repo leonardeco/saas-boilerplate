@@ -22,5 +22,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
+# Migration runner and SQL files
+COPY --from=builder /app/packages/db/src/migrations ./packages/db/src/migrations
+COPY --from=builder /app/packages/db/src/migrate.ts ./packages/db/src/migrate.ts
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+# Run DB migrations then start the API
+CMD ["sh", "-c", "node --import tsx/esm /app/packages/db/src/migrate.ts && node /app/dist/index.js"]
