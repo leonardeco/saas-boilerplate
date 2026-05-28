@@ -1,0 +1,13 @@
+import fp from "fastify-plugin";
+import rateLimit from "@fastify/rate-limit";
+
+export const rateLimitPlugin = fp(async (app) => {
+  await app.register(rateLimit, {
+    max: 100,
+    timeWindow: "1 minute",
+    errorResponseBuilder: () => ({
+      error: "Too Many Requests",
+      message: "Rate limit exceeded, retry in 1 minute",
+    }),
+  });
+});
