@@ -32,10 +32,10 @@
     "@saas/config": "*",
     "@types/bcryptjs": "^2.4.6",
     "@types/nodemailer": "^6.4.17",
-    "@types/node": "^22.10.2",
+    "@types/node": "^25.9.1",
     "@vitest/coverage-v8": "^2.1.8",
     "tsx": "^4.19.2",
-    "typescript": "^5.6.3",
+    "typescript": "^6.0.3",
     "vitest": "^2.1.8"
   }
 }
