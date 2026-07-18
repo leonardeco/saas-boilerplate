@@ -30,8 +30,10 @@ const REGION =
   process.env.RAILWAY_REGION ??
   "local";
 const isProd = env.NODE_ENV === "production";
-const enableSwagger =
-  env.ENABLE_SWAGGER === true || (!isProd && env.ENABLE_SWAGGER !== false);
+// Swagger on in non-prod unless ENABLE_SWAGGER=false; in prod only if ENABLE_SWAGGER=true
+const enableSwagger = isProd
+  ? process.env.ENABLE_SWAGGER === "true"
+  : process.env.ENABLE_SWAGGER !== "false";
 
 async function main() {
   const app = Fastify({
