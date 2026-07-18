@@ -14,11 +14,10 @@ import {
 import { withSlotLock } from "../lib/redis.js";
 import type { HoldRequest } from "@saas/contracts";
 import {
-  sendMail,
-  bookingHoldEmail,
-  bookingConfirmedEmail,
-  bookingCancelledEmail,
-} from "./email.service.js";
+  notifyBookingHold,
+  notifyBookingConfirmed,
+  notifyBookingCancelled,
+} from "./notify.service.js";
 
 export async function listSlots(venueId: string) {
   const now = new Date();
@@ -119,15 +118,16 @@ export async function holdReservation(input: HoldRequest, userId?: string) {
     return row!;
   });
 
-  const mail = bookingHoldEmail({
+  void notifyBookingHold({
     guestName: input.guestName,
+    guestEmail: input.guestEmail,
+    guestPhone: input.guestPhone,
     venueName: venue.name,
     partySize: input.partySize,
     startsAt: await slotLabel(input.slotId),
     holdExpiresAt: reservation.holdExpiresAt?.toISOString(),
     reservationId: reservation.id,
   });
-  void sendMail({ to: input.guestEmail, ...mail });
 
   return reservation;
 }
@@ -154,14 +154,15 @@ export async function confirmReservation(id: string, userId?: string) {
     .where(eq(reservations.id, id))
     .returning();
 
-  const mail = bookingConfirmedEmail({
+  void notifyBookingConfirmed({
     guestName: res.guestName,
+    guestEmail: res.guestEmail,
+    guestPhone: res.guestPhone,
     venueName: await venueName(res.venueId),
     partySize: res.partySize,
     startsAt: await slotLabel(res.slotId),
     reservationId: res.id,
   });
-  void sendMail({ to: res.guestEmail, ...mail });
 
   return updated;
 }
@@ -200,12 +201,13 @@ export async function cancelReservation(
     return row;
   });
 
-  const mail = bookingCancelledEmail({
+  void notifyBookingCancelled({
     guestName: res.guestName,
+    guestEmail: res.guestEmail,
+    guestPhone: res.guestPhone,
     venueName: await venueName(res.venueId),
     reservationId: res.id,
   });
-  void sendMail({ to: res.guestEmail, ...mail });
 
   return updated;
 }

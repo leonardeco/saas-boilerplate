@@ -1,24 +1,39 @@
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-/** Prefer cookies (credentials) + optional Bearer from localStorage for SPA. */
-export function authHeaders(extra?: HeadersInit): HeadersInit {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("accessToken");
-    if (token) headers.Authorization = `Bearer ${token}`;
-  }
-  return { ...headers, ...(extra as Record<string, string>) };
+/**
+ * Cookie-only auth client.
+ * Relies on httpOnly cookies (nt_access / nt_refresh) with credentials: "include".
+ * No tokens in localStorage.
+ */
+export function apiUrl(path: string) {
+  return `${API}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 export async function apiFetch(path: string, init?: RequestInit) {
-  return fetch(`${API}${path.startsWith("/") ? path : `/${path}`}`, {
+  return fetch(apiUrl(path), {
     ...init,
     credentials: "include",
     headers: {
-      ...authHeaders(),
+      "Content-Type": "application/json",
       ...(init?.headers ?? {}),
     },
   });
+}
+
+/** Try refresh cookie session; returns true if /auth/me succeeds. */
+export async function ensureSession(): Promise<boolean> {
+  const me = await apiFetch("/auth/me");
+  if (me.ok) return true;
+  const refreshed = await apiFetch("/auth/refresh", { method: "POST", body: "{}" });
+  if (!refreshed.ok) return false;
+  const me2 = await apiFetch("/auth/me");
+  return me2.ok;
+}
+
+export async function logout() {
+  try {
+    await apiFetch("/auth/logout", { method: "POST", body: "{}" });
+  } catch {
+    /* ignore */
+  }
 }

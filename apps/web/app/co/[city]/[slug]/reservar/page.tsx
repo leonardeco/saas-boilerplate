@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/auth-client";
 
 type Slot = {
   id: string;
@@ -59,15 +60,8 @@ export default function ReservarPage() {
     setMsg(null);
     if (!venue) return;
     try {
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      const token = localStorage.getItem("accessToken");
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const res = await fetch(apiUrl("/bookings/hold"), {
+      const res = await apiFetch("/bookings/hold", {
         method: "POST",
-        headers,
         body: JSON.stringify({
           venueId: venue.id,
           slotId,
@@ -95,7 +89,7 @@ export default function ReservarPage() {
     if (!reservationId) return;
     setErr(null);
     try {
-      const res = await fetch(apiUrl(`/bookings/${reservationId}/confirm`), {
+      const res = await apiFetch(`/bookings/${reservationId}/confirm`, {
         method: "POST",
       });
       const data = await res.json();

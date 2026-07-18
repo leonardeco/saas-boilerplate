@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch, ensureSession, logout } from "@/lib/auth-client";
 
 type Venue = {
   id: string;
@@ -19,14 +19,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
+      const ok = await ensureSession();
+      if (!ok) {
         setErr("Inicia sesión");
         return;
       }
-      const res = await fetch(apiUrl("/venues/mine"), {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiFetch("/venues/mine");
       if (!res.ok) {
         setErr("No autorizado o error de API");
         return;
@@ -39,16 +37,37 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-white">Panel del local</h1>
-        <Link href="/" className="text-sm text-cyan-400">
-          Inicio
-        </Link>
+        <div className="flex gap-3 text-sm">
+          <Link href="/" className="text-cyan-400">
+            Inicio
+          </Link>
+          <button
+            type="button"
+            className="text-slate-400 hover:text-white"
+            onClick={async () => {
+              await logout();
+              window.location.href = "/";
+            }}
+          >
+            Salir
+          </button>
+        </div>
       </div>
       <p className="mt-2 text-slate-400">
-        Sedes de tu organización (claim en S4).
+        Sedes de tu organización (auth por cookies).
       </p>
-      {err && <p className="mt-4 text-amber-300">{err}</p>}
+      {err && (
+        <p className="mt-4 text-amber-300">
+          {err}{" "}
+          {err.includes("sesión") && (
+            <Link href="/login" className="text-cyan-400 underline">
+              Login
+            </Link>
+          )}
+        </p>
+      )}
       <ul className="mt-8 space-y-3">
         {venues.map((v) => (
           <li
@@ -67,10 +86,7 @@ export default function DashboardPage() {
               >
                 Agenda
               </Link>
-              <Link
-                href={`/dashboard/billing`}
-                className="text-cyan-400"
-              >
+              <Link href="/dashboard/billing" className="text-cyan-400">
                 Billing
               </Link>
             </div>

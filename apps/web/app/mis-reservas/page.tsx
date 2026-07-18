@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch, ensureSession } from "@/lib/auth-client";
 
 type Reservation = {
   id: string;
@@ -19,14 +19,11 @@ export default function MisReservasPage() {
 
   useEffect(() => {
     async function load() {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
+      if (!(await ensureSession())) {
         setErr("Inicia sesión para ver tus reservas");
         return;
       }
-      const res = await fetch(apiUrl("/bookings/mine"), {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiFetch("/bookings/mine");
       if (!res.ok) {
         setErr("Error al cargar");
         return;
@@ -43,7 +40,14 @@ export default function MisReservasPage() {
         ← Inicio
       </Link>
       <h1 className="mt-4 text-2xl font-bold text-white">Mis reservas</h1>
-      {err && <p className="mt-4 text-amber-300">{err}</p>}
+      {err && (
+        <p className="mt-4 text-amber-300">
+          {err}{" "}
+          <Link href="/login" className="text-cyan-400 underline">
+            Login
+          </Link>
+        </p>
+      )}
       <ul className="mt-6 space-y-2">
         {rows.map((r) => (
           <li

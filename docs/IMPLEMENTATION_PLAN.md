@@ -43,11 +43,18 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 - Playwright smoke suite in apps/e2e
 - scripts/make-superadmin.mjs
 
+## v1.2 (done)
+
+- WhatsApp Cloud API optional + unified notify service
+- SPA cookie-only (no localStorage tokens)
+- CI: unit + Postgres/Redis integration + Playwright e2e
+- Domain concurrency simulation + optional DB hold race
+
 ## Remaining backlog
 
-- WhatsApp Business notifications
-- Full cookie-only SPA (drop localStorage tokens)
-- CI job with Postgres service for integration tests
-- Playwright in CI with webServer
+- Template WhatsApp messages (approved Meta templates)
+- OAuth social login UI
+- Observability (OTel metrics)
+- Multi-region deploy
 
 

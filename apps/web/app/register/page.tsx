@@ -1,41 +1,36 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/auth-client";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setOk(null);
     setLoading(true);
     try {
-      const res = await fetch(apiUrl("/auth/register"), {
+      const res = await apiFetch("/auth/register", {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(
-          typeof data.error === "string"
-            ? data.error
-            : "No se pudo registrar",
+          typeof data.error === "string" ? data.error : "No se pudo registrar",
         );
         return;
       }
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      setOk(`Cuenta creada: ${data.user.email}`);
+      router.push("/dashboard");
+      router.refresh();
     } catch {
       setError("No se pudo conectar con la API");
     } finally {
@@ -82,7 +77,6 @@ export default function RegisterPage() {
           />
         </label>
         {error && <p className="text-sm text-red-400">{error}</p>}
-        {ok && <p className="text-sm text-emerald-400">{ok}</p>}
         <button
           type="submit"
           disabled={loading}

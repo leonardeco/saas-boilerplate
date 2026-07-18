@@ -97,16 +97,26 @@ npm run test:e2e -w @saas/e2e
 DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
 ```
 
-## Auth notes (v1.1)
+## Auth notes (v1.2)
 
-- Login/register set **httpOnly cookies** (`nt_access`, `nt_refresh`) and still return JWT in JSON for SPA.
-- `credentials: "include"` on web fetch recommended.
-- Auth endpoints: **10 req/min**; booking hold: **20 req/min**.
+- **Cookie-only SPA**: web no longer stores tokens in `localStorage`.
+- Cookies httpOnly: `nt_access`, `nt_refresh` · `credentials: "include"`.
+- API still returns JWT in JSON for mobile clients if needed.
+- Auth **10 req/min** · hold **20 req/min**.
+
+## Notifications
+
+- **Email**: Resend or console preview
+- **WhatsApp**: Meta Cloud API when `WHATSAPP_ENABLED=true` + token + phone number id
 
 ## Catalog search
 
-- Uses **Meilisearch** when `MEILI_HOST` is set (after worker reindex).
-- Falls back to **Postgres** automatically.
+- **Meilisearch** when `MEILI_HOST` set · else **Postgres**
+
+## CI
+
+- `unit` · `integration` (Postgres + Redis + migrate/seed) · `e2e` (API + Web + Playwright)
+
 
 
 ## Docs

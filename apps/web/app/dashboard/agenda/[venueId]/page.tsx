@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch, ensureSession } from "@/lib/auth-client";
 
 type Reservation = {
   id: string;
@@ -21,14 +21,11 @@ export default function AgendaPage() {
 
   useEffect(() => {
     async function load() {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
+      if (!(await ensureSession())) {
         setErr("Inicia sesión");
         return;
       }
-      const res = await fetch(apiUrl(`/bookings/agenda/${venueId}`), {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiFetch(`/bookings/agenda/${venueId}`);
       if (!res.ok) {
         setErr("Sin acceso a la agenda de este local");
         return;

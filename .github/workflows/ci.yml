@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,11 +16,105 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
-      - name: Unit tests (domain + contracts)
+      - name: Unit tests
+        run: npm run test:unit
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nighttable_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nighttable_db
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: ci-access-secret-min-32-characters-xx
+      JWT_REFRESH_SECRET: ci-refresh-secret-min-32-characters-x
+      RUN_INTEGRATION: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Migrate + seed
         run: |
-          npm test -w @saas/domain
-          npm test -w @saas/contracts
-      - name: Typecheck packages
+          npm run db:migrate -w @saas/db
+          npm run db:seed -w @saas/db
+      - name: Domain + API unit (with env)
+        run: npm run test:unit
+      - name: Booking concurrency domain
+        run: npm test -w @saas/domain
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [unit]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nighttable_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nighttable_db
+      JWT_ACCESS_SECRET: ci-access-secret-min-32-characters-xx
+      JWT_REFRESH_SECRET: ci-refresh-secret-min-32-characters-x
+      REDIS_URL: redis://localhost:6379
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      WEB_URL: http://localhost:3000
+      CORS_ORIGIN: http://localhost:3000
+      COOKIE_SECURE: "false"
+      E2E_BASE_URL: http://localhost:3000
+      E2E_API_URL: http://localhost:3001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Migrate + seed
         run: |
-          npm run lint -w @saas/domain || true
-          npm run lint -w @saas/contracts || true
+          npm run db:migrate -w @saas/db
+          npm run db:seed -w @saas/db
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+        working-directory: apps/e2e
+      - name: Start API
+        run: |
+          npm run dev -w @saas/api &
+          npx --yes wait-on http://127.0.0.1:3001/health -t 60000
+      - name: Start Web
+        run: |
+          npm run dev -w @saas/web &
+          npx --yes wait-on http://127.0.0.1:3000 -t 90000
+      - name: E2E smoke
+        run: npm test -w @saas/e2e

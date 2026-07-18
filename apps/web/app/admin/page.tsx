@@ -2,31 +2,30 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch, ensureSession } from "@/lib/auth-client";
 
 export default function AdminPage() {
   const [citySlug, setCitySlug] = useState("bogota");
   const [provider, setProvider] = useState("mock");
   const [jobs, setJobs] = useState<unknown[]>([]);
-  const [claims, setClaims] = useState<Array<{ id: string; venueId: string; contactEmail: string }>>([]);
+  const [claims, setClaims] = useState<
+    Array<{ id: string; venueId: string; contactEmail: string }>
+  >([]);
   const [msg, setMsg] = useState<string | null>(null);
-
-  function authHeaders() {
-    const token = localStorage.getItem("accessToken");
-    return {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-  }
 
   async function refresh() {
     try {
+      if (!(await ensureSession())) {
+        setMsg("Inicia sesión como SUPERADMIN");
+        return;
+      }
       const [j, c] = await Promise.all([
-        fetch(apiUrl("/admin/ingestion"), { headers: authHeaders() }),
-        fetch(apiUrl("/claims/pending"), { headers: authHeaders() }),
+        apiFetch("/admin/ingestion"),
+        apiFetch("/claims/pending"),
       ]);
       if (j.ok) setJobs((await j.json()).data ?? []);
       if (c.ok) setClaims((await c.json()).data ?? []);
+      if (!j.ok && !c.ok) setMsg("Forbidden — necesitas SUPERADMIN");
     } catch {
       setMsg("Error de red o sin rol SUPERADMIN");
     }
@@ -39,9 +38,8 @@ export default function AdminPage() {
   async function runIngest(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
-    const res = await fetch(apiUrl("/admin/ingestion"), {
+    const res = await apiFetch("/admin/ingestion", {
       method: "POST",
-      headers: authHeaders(),
       body: JSON.stringify({ citySlug, provider }),
     });
     const data = await res.json();
@@ -54,10 +52,7 @@ export default function AdminPage() {
   }
 
   async function approve(id: string) {
-    await fetch(apiUrl(`/claims/${id}/approve`), {
-      method: "POST",
-      headers: authHeaders(),
-    });
+    await apiFetch(`/claims/${id}/approve`, { method: "POST" });
     refresh();
   }
 
@@ -68,10 +63,13 @@ export default function AdminPage() {
       </Link>
       <h1 className="mt-4 text-2xl font-bold text-white">Admin plataforma</h1>
       <p className="mt-2 text-sm text-slate-400">
-        Requiere usuario con <code>platform_role = SUPERADMIN</code>
+        Requiere <code>platform_role = SUPERADMIN</code> · cookies httpOnly
       </p>
 
-      <form onSubmit={runIngest} className="mt-8 space-y-3 rounded-xl border border-slate-800 p-4">
+      <form
+        onSubmit={runIngest}
+        className="mt-8 space-y-3 rounded-xl border border-slate-800 p-4"
+      >
         <h2 className="font-semibold text-white">Ingestión</h2>
         <input
           value={citySlug}
@@ -89,7 +87,10 @@ export default function AdminPage() {
           <option value="google_places">google_places</option>
           <option value="all">all</option>
         </select>
-        <button type="submit" className="rounded-lg bg-cyan-500 px-4 py-2 text-slate-950">
+        <button
+          type="submit"
+          className="rounded-lg bg-cyan-500 px-4 py-2 text-slate-950"
+        >
           Encolar job
         </button>
       </form>
@@ -116,9 +117,7 @@ export default function AdminPage() {
               </button>
             </li>
           ))}
-          {claims.length === 0 && (
-            <li className="text-slate-500">Ninguno</li>
-          )}
+          {claims.length === 0 && <li className="text-slate-500">Ninguno</li>}
         </ul>
       </section>
 

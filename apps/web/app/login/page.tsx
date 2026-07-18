@@ -1,36 +1,36 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/auth-client";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setOk(null);
     setLoading(true);
     try {
-      const res = await fetch(apiUrl("/auth/login"), {
+      const res = await apiFetch("/auth/login", {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Error al iniciar sesión");
+        setError(
+          typeof data.error === "string" ? data.error : "Error al iniciar sesión",
+        );
         return;
       }
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      setOk(`Hola ${data.user.name}`);
+      // Tokens live only in httpOnly cookies
+      router.push("/dashboard");
+      router.refresh();
     } catch {
       setError("No se pudo conectar con la API");
     } finally {
@@ -44,6 +44,9 @@ export default function LoginPage() {
         ← Inicio
       </Link>
       <h1 className="mt-4 text-2xl font-bold text-white">Iniciar sesión</h1>
+      <p className="mt-2 text-xs text-slate-500">
+        Sesión por cookies httpOnly (sin tokens en el navegador).
+      </p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
         <label className="block text-sm text-slate-300">
           Email
@@ -67,7 +70,6 @@ export default function LoginPage() {
           />
         </label>
         {error && <p className="text-sm text-red-400">{error}</p>}
-        {ok && <p className="text-sm text-emerald-400">{ok}</p>}
         <button
           type="submit"
           disabled={loading}
