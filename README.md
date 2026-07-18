@@ -114,7 +114,9 @@ npm run release -- 1.6.0   # prints tag commands
 | [CHANGELOG](./CHANGELOG.md) | Version history |
 | [SECURITY.md](./SECURITY.md) | Vulnerability reports |
 
-Legal: `/privacy` · `/terms` · Compose: `docker-compose.prod.example.yml`
+Legal: `/privacy` · `/terms` · Compose: `docker-compose.prod.example.yml`  
+**Production env template:** [`.env.production.example`](./.env.production.example)  
+**Release notes:** [docs/releases/v1.6.0.md](./docs/releases/v1.6.0.md)
 
 
 
