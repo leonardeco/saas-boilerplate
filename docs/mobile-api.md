@@ -6,7 +6,7 @@
 |---|---|---|
 | Web PWA | httpOnly cookies + `credentials: include` | Installable via manifest |
 | Native (future) | Bearer JWT from login/register JSON | Same API; store tokens in secure storage |
-| Capacitor/React Native | Bearer preferred | Cookies need shared domain |
+| Capacitor native | Bearer in Preferences | Auto-detected via `window.Capacitor` |
 
 ## Base URL
 
@@ -70,11 +70,26 @@ Hold/confirm always require network.
 ## Deep links (suggested)
 
 ```
-nighttable://venue/{city}/{slug}
+nighttable://co/{city}/{slug}
 nighttable://booking/{id}
 https://app.nighttable.co/co/{city}/{slug}
+```
+
+Universal links files (placeholders):
+
+- `public/.well-known/assetlinks.json` (Android)
+- `public/.well-known/apple-app-site-association` (iOS)
+
+## Capacitor
+
+See [docs/runbooks/capacitor.md](./runbooks/capacitor.md) and `apps/mobile/`.
+
+```bash
+npm run mobile:www
+npm run mobile:sync
 ```
 
 ## Version
 
 Negotiate via `GET /health` → `version`, `region`.
+

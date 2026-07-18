@@ -23,7 +23,7 @@ import { adminRoutes } from "./routes/admin.js";
 import { venuesManageRoutes } from "./routes/venues-manage.js";
 import { usingReadReplica } from "@saas/db";
 
-const VERSION = "1.4.0";
+const VERSION = "1.5.0";
 const REGION =
   process.env.REGION ?? process.env.FLY_REGION ?? process.env.RAILWAY_REGION ?? "local";
 

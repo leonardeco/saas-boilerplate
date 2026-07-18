@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.co.nighttable.app",
+        "paths": ["/co/*", "/dashboard/*", "/login", "/register", "/mis-reservas"]
+      }
+    ]
+  }
+}

@@ -132,10 +132,17 @@ DATABASE_READ_URL=postgresql://…@replica/…
 Catalog + geo use `dbRead`. Bookings/auth always primary.  
 Docs: [docs/runbooks/read-replicas.md](./docs/runbooks/read-replicas.md)
 
-## PWA / Mobile
+## PWA / Mobile / Capacitor
 
-- Installable web app: `manifest.webmanifest` + service worker (prod)
-- Mobile client guide: [docs/mobile-api.md](./docs/mobile-api.md)
+- Installable web: `manifest.webmanifest` + service worker (prod)
+- **Capacitor shell**: `apps/mobile` (iOS/Android WebView)
+- Guides: [docs/mobile-api.md](./docs/mobile-api.md) · [docs/runbooks/capacitor.md](./docs/runbooks/capacitor.md)
+
+```bash
+npm run mobile:www
+# CAPACITOR_SERVER_URL=http://<LAN-IP>:3000 npm run mobile:sync -w @saas/mobile
+```
+
 
 ## Multi-region
 

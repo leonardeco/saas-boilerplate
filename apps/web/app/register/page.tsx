@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/auth-client";
+import { apiFetch, registerWithPassword } from "@/lib/auth-client";
 import { OAuthButtons } from "@/components/oauth-buttons";
+import { isNativeApp, nativeOpenUrl } from "@/lib/native";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,8 +18,10 @@ export default function RegisterPage() {
     google: boolean;
     github: boolean;
   }>({ google: true, github: true });
+  const [native, setNative] = useState(false);
 
   useEffect(() => {
+    setNative(isNativeApp());
     apiFetch("/auth/oauth/providers")
       .then((r) => r.json())
       .then((j) => {
@@ -32,11 +35,7 @@ export default function RegisterPage() {
     setError(null);
     setLoading(true);
     try {
-      const res = await apiFetch("/auth/register", {
-        method: "POST",
-        body: JSON.stringify({ name, email, password }),
-      });
-      const data = await res.json();
+      const { res, data } = await registerWithPassword({ name, email, password });
       if (!res.ok) {
         setError(
           typeof data.error === "string" ? data.error : "No se pudo registrar",
@@ -52,14 +51,46 @@ export default function RegisterPage() {
     }
   }
 
+  async function oauth(provider: "google" | "github") {
+    const url = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"}/auth/oauth/${provider}/start`;
+    if (isNativeApp()) {
+      await nativeOpenUrl(url);
+      return;
+    }
+    window.location.href = url;
+  }
+
   return (
     <main className="mx-auto max-w-md px-6 py-16">
       <Link href="/" className="text-sm text-cyan-400">
         ← Inicio
       </Link>
       <h1 className="mt-4 text-2xl font-bold text-white">Crear cuenta</h1>
-      <div className="mt-8">
-        <OAuthButtons providers={providers} />
+      <div className="mt-8 space-y-2">
+        {native ? (
+          <>
+            {providers.google && (
+              <button
+                type="button"
+                onClick={() => oauth("google")}
+                className="flex w-full items-center justify-center rounded-lg border border-slate-700 bg-slate-900 py-2.5 text-sm text-white"
+              >
+                Continuar con Google
+              </button>
+            )}
+            {providers.github && (
+              <button
+                type="button"
+                onClick={() => oauth("github")}
+                className="flex w-full items-center justify-center rounded-lg border border-slate-700 bg-slate-900 py-2.5 text-sm text-white"
+              >
+                Continuar con GitHub
+              </button>
+            )}
+          </>
+        ) : (
+          <OAuthButtons providers={providers} />
+        )}
         <div className="my-6 flex items-center gap-3 text-xs text-slate-500">
           <div className="h-px flex-1 bg-slate-800" />
           o con email

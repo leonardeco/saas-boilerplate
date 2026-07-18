@@ -64,11 +64,19 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 - PWA manifest + service worker + mobile API docs
 - Touch-safe CSS / safe-area
 
+## v1.5 (done)
+
+- Capacitor shell `apps/mobile` (config, www, plugins, scripts)
+- Native auth bridge (Preferences + Bearer)
+- Deep link placeholders (assetlinks / AASA)
+- OTel full SDK upgrade path doc
+
 ## Remaining backlog
 
-- Native Capacitor shell
-- Full @opentelemetry/sdk-node auto-instrumentation
+- Commit generated ios/android after first `cap add` (team decision)
+- Full @opentelemetry/sdk-node (optional, see otel-sdk-upgrade.md)
 - Meta template approval (ops)
+- App Store / Play listing assets
 
 
 
