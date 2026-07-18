@@ -62,19 +62,30 @@ npm run dev -w @saas/web
 | Geo cities | http://localhost:3001/geo/cities |
 | Meili | http://localhost:7700 |
 
-## Sprint actual: S0 Foundation
+## Sprint actual: S1 Auth + Catalog
 
-- [x] Arquitectura v2 + ADRs
-- [x] Scaffold monorepo (web, api, worker, packages)
-- [x] Domain: quality + booking (TDD)
-- [x] Contracts Zod
-- [x] Schema geo + venues + orgs
-- [x] Seed 18 ciudades principales CO
-- [x] Docker Compose: PG + Redis + Meili
-- [ ] Migraciones Drizzle aplicadas en CI
-- [ ] Auth/JWT + Stripe (port desde boilerplate legacy en S1)
+### S0
+- [x] Arquitectura v2 + ADRs + monorepo scaffold
+- [x] Domain TDD · contracts · compose (PG/Redis/Meili)
+
+### S1
+- [x] Auth JWT: register / login / refresh / logout / me
+- [x] Migración SQL `0000_init` + seed geo + planes + venues demo
+- [x] API catálogo: `GET /catalog/search`, `GET /catalog/:city/:slug`
+- [x] SEO: `/co/[city]`, `/co/[city]/[slug]` · login/register
+- [x] CI GitHub Actions (unit tests)
+- [ ] Stripe checkout completo (S4 billing polish)
 - [ ] Ingestión providers (S2)
 - [ ] Booking engine con locks (S3)
+
+### DB local
+
+```bash
+docker compose up postgres redis meilisearch -d
+# completa JWT secrets en .env (min 32 chars)
+npm run db:migrate -w @saas/db
+npm run db:seed -w @saas/db
+```
 
 ## Docs
 

@@ -16,9 +16,16 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 | T1.3 quality domain TDD | done |
 | T1.4 geo API read | done (seed-backed) |
 
-## Next: S1
+## S1 (done on feature/s1-auth-catalog)
 
-1. Port auth/JWT/Stripe from legacy boilerplate routes
-2. Drizzle migrate + seed runner in CI
-3. Public SEO city pages with seeded demo venues
-4. Mock ingestion → publish premium venues
+1. Auth JWT port (register/login/refresh/logout/me)
+2. SQL migrate runner + seed geo/plans/demo venues
+3. Catalog search API + SEO city/venue pages
+4. Login/register UI
+5. CI unit tests
+
+## Next: S2
+
+1. Ingestion providers (mock + Places/OSM adapters)
+2. Worker pipeline publish + reindex Meili
+3. Admin trigger SUPERADMIN
