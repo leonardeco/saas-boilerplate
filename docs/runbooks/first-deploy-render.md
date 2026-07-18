@@ -8,16 +8,25 @@ Ruta recomendada para el primer go-live de NightTable CO.
 - Repo GitHub: `leonardeco/saas-boilerplate` (branch `main`, tag `v1.6.0`)
 - 15–30 minutos
 
-## Paso 1 — Generar secretos locales
+## Paso 0 — Helper Windows (opcional)
 
-En tu PC (repo clonado):
+Desde el repo:
 
-```bash
-cd saas-boilerplate
-node scripts/gen-secrets.mjs
+```powershell
+cd "C:\Users\MI PC\Documents\PROYECTOS\saas-boilerplate"
+git pull origin main
+powershell -ExecutionPolicy Bypass -File .\scripts\first-deploy.ps1
 ```
 
-Guarda el output en un gestor de contraseñas (1Password / Bitwarden). **No lo subas a git.**
+El script genera secretos, te recuerda el Blueprint y (si pegas URLs) hace smoke + migrate + seed prod + superadmin.
+
+## Paso 1 — Generar secretos locales
+
+```bash
+npm run gen:secrets
+```
+
+Guarda el output en un gestor de contraseñas. **No lo subas a git.**
 
 ## Paso 2 — Blueprint
 
@@ -85,13 +94,15 @@ Espera a que API health check pase:
 
 En Render → nighttable-db → **Connections** → External Database URL:
 
-```bash
-# PowerShell
+```powershell
 $env:DATABASE_URL="postgresql://...render.com/..."
 npm run db:migrate -w @saas/db
-npm run db:seed -w @saas/db
+# geo + plans + flags — SIN venues demo
+npm run db:seed:prod
 npm run make-superadmin -- tu@email.com
 ```
+
+Staging con demos: `SEED_DEMO_VENUES=true npm run db:seed -w @saas/db`
 
 ## Paso 7 — Smoke test
 

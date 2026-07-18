@@ -24,6 +24,16 @@ async function main() {
     process.exit(1);
   }
 
+  // Demo venues: on by default in development; off in production unless SEED_DEMO_VENUES=true
+  const seedDemos =
+    process.env.SEED_DEMO_VENUES === "true" ||
+    (process.env.SEED_DEMO_VENUES !== "false" &&
+      process.env.NODE_ENV !== "production");
+
+  console.log(
+    `Seed mode: demos=${seedDemos ? "yes" : "no"} (NODE_ENV=${process.env.NODE_ENV ?? "undefined"})`,
+  );
+
   const client = postgres(url, { max: 1 });
   const db = drizzle(client);
 
@@ -105,71 +115,79 @@ async function main() {
     }
   }
 
-  // Demo venues
-  for (const v of DEMO_VENUES) {
-    const cityId = cityIdBySlug.get(v.citySlug);
-    if (!cityId) {
-      console.warn(`! skip venue ${v.slug}: city ${v.citySlug} missing`);
-      continue;
+  if (seedDemos) {
+    // Demo venues (staging / local only)
+    for (const v of DEMO_VENUES) {
+      const cityId = cityIdBySlug.get(v.citySlug);
+      if (!cityId) {
+        console.warn(`! skip venue ${v.slug}: city ${v.citySlug} missing`);
+        continue;
+      }
+      const existing = await db
+        .select()
+        .from(venues)
+        .where(eq(venues.slug, v.slug))
+        .limit(1);
+      const q = demoQuality(v);
+      if (!existing[0]) {
+        await db.insert(venues).values({
+          cityId,
+          name: v.name,
+          slug: v.slug,
+          description: v.description,
+          type: v.type,
+          address: v.address,
+          lat: v.lat,
+          lng: v.lng,
+          ratingAvg: v.ratingAvg,
+          ratingCount: v.ratingCount,
+          qualityScore: q.score,
+          curationBadge: v.curationBadge,
+          claimStatus: "UNCLAIMED",
+          bookingEnabled: v.bookingEnabled,
+          status: q.isPublishablePremium ? "PUBLISHED" : "DRAFT",
+          priceLevel: v.priceLevel,
+          minAge: v.minAge,
+          coverAmount: v.coverAmount,
+          hasGuestList: v.hasGuestList ?? false,
+          capacity: v.capacity,
+          primarySource: "manual",
+        });
+        console.log(`+ venue ${v.slug} premium=${q.isPublishablePremium}`);
+      } else {
+        console.log(`= venue ${v.slug}`);
+      }
     }
-    const existing = await db.select().from(venues).where(eq(venues.slug, v.slug)).limit(1);
-    const q = demoQuality(v);
-    if (!existing[0]) {
-      await db.insert(venues).values({
-        cityId,
-        name: v.name,
-        slug: v.slug,
-        description: v.description,
-        type: v.type,
-        address: v.address,
-        lat: v.lat,
-        lng: v.lng,
-        ratingAvg: v.ratingAvg,
-        ratingCount: v.ratingCount,
-        qualityScore: q.score,
-        curationBadge: v.curationBadge,
-        claimStatus: "UNCLAIMED",
-        bookingEnabled: v.bookingEnabled,
-        status: q.isPublishablePremium ? "PUBLISHED" : "DRAFT",
-        priceLevel: v.priceLevel,
-        minAge: v.minAge,
-        coverAmount: v.coverAmount,
-        hasGuestList: v.hasGuestList ?? false,
-        capacity: v.capacity,
-        primarySource: "manual",
-      });
-      console.log(`+ venue ${v.slug} premium=${q.isPublishablePremium}`);
-    } else {
-      console.log(`= venue ${v.slug}`);
-    }
-  }
 
-  // Slots for booking-enabled demo venues
-  const bookable = await db
-    .select()
-    .from(venues)
-    .where(eq(venues.bookingEnabled, true));
-
-  for (const v of bookable) {
-    const existingSlots = await db
+    // Slots for booking-enabled demo venues
+    const bookable = await db
       .select()
-      .from(availabilitySlots)
-      .where(eq(availabilitySlots.venueId, v.id))
-      .limit(1);
-    if (existingSlots[0]) {
-      console.log(`= slots ${v.slug}`);
-      continue;
+      .from(venues)
+      .where(eq(venues.bookingEnabled, true));
+
+    for (const v of bookable) {
+      const existingSlots = await db
+        .select()
+        .from(availabilitySlots)
+        .where(eq(availabilitySlots.venueId, v.id))
+        .limit(1);
+      if (existingSlots[0]) {
+        console.log(`= slots ${v.slug}`);
+        continue;
+      }
+      for (const s of upcomingSlots(5)) {
+        await db.insert(availabilitySlots).values({
+          venueId: v.id,
+          startsAt: s.startsAt,
+          endsAt: s.endsAt,
+          capacity: s.capacity,
+          label: s.label,
+        });
+      }
+      console.log(`+ slots ${v.slug}`);
     }
-    for (const s of upcomingSlots(5)) {
-      await db.insert(availabilitySlots).values({
-        venueId: v.id,
-        startsAt: s.startsAt,
-        endsAt: s.endsAt,
-        capacity: s.capacity,
-        label: s.label,
-      });
-    }
-    console.log(`+ slots ${v.slug}`);
+  } else {
+    console.log("= skip demo venues/slots (production-safe seed)");
   }
 
   for (const flag of [

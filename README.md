@@ -122,7 +122,15 @@ Legal: `/privacy` · `/terms` · Compose: `docker-compose.prod.example.yml`
 ```bash
 npm run gen:secrets                    # JWT / Meili keys
 npm run smoke:prod -- https://api…     # health/ready/geo
+npm run db:seed:prod                   # geo+plans only (no demo venues)
 ```
+
+Windows one-shot helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\first-deploy.ps1
+```
+
 
 
 
