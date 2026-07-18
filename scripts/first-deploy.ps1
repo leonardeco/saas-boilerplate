@@ -16,9 +16,15 @@ Write-Host "====================================" -ForegroundColor Cyan
 Write-Host ""
 
 # --- Step A: secrets ---
-Write-Host "[A] Generating secrets (save these offline):" -ForegroundColor Yellow
+Write-Host "[A] Secrets file (gitignored secrets.local.env):" -ForegroundColor Yellow
 node scripts/gen-secrets.mjs
+if (Test-Path "secrets.local.env") {
+  Write-Host "  → Open: $((Resolve-Path secrets.local.env).Path)" -ForegroundColor Green
+  # open in default editor without printing contents
+  try { Invoke-Item "secrets.local.env" } catch { }
+}
 Write-Host ""
+
 
 # --- Step B: checklist ---
 Write-Host "[B] Render dashboard steps:" -ForegroundColor Yellow

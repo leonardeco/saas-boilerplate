@@ -5,6 +5,8 @@ dist
 coverage
 .env
 .env.local
+.env.production
+secrets.local.env
 *.log
 .DS_Store
 .idea
@@ -12,3 +14,9 @@ coverage
 *.tsbuildinfo
 apps/web/out
 packages/db/drizzle
+
+# local deploy secrets (never commit)
+secrets.local.env
+.env.production
+.env.local
+
