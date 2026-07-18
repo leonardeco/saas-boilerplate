@@ -8,6 +8,12 @@ coverage
 .env.production
 secrets.local.env
 *.log
+*.dev.log
+*.dev.err.log
+api.dev.log
+api.dev.err.log
+web.dev.log
+web.dev.err.log
 .DS_Store
 .idea
 .vscode
