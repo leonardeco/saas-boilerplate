@@ -1,23 +1,21 @@
 # Production readiness — NightTable CO
 
-## Pre-launch checklist
+Full release flow: **[release-checklist.md](./release-checklist.md)**  
+Stores: **[store-listing.md](./store-listing.md)**
 
-- [ ] `DATABASE_URL` managed Postgres 16
-- [ ] `REDIS_URL` managed Redis
-- [ ] `JWT_*_SECRET` ≥ 32 chars, unique per env
-- [ ] `STRIPE_*` live keys only in production
-- [ ] `GOOGLE_PLACES_API_KEY` budget + billing alerts
-- [ ] `MEILI_HOST` + master key rotated
-- [ ] `CORS_ORIGIN` / `WEB_URL` production domains
-- [ ] Migrations applied: `npm run db:migrate -w @saas/db`
-- [ ] Seed geo/plans (venues via ingestion, not demo in prod)
-- [ ] First SUPERADMIN created (SQL update platform_role)
-- [ ] Worker service running alongside API
-- [ ] Health: `/health` and `/ready`
-- [ ] HTTPS only; secrets never in git
-- [ ] Rate limits verified on `/auth/login` and `/bookings/hold`
-- [ ] Stripe webhook signature verified
-- [ ] Error budget: overbooking SLO = 0
+## Pre-launch checklist (summary)
+
+- [ ] Managed Postgres 16 + backups
+- [ ] Managed Redis (required for multi-instance locks)
+- [ ] JWT secrets strong & unique (`openssl rand -base64 48`)
+- [ ] `COOKIE_SECURE=true` · `TRUST_PROXY=true`
+- [ ] `WEB_URL` / `CORS_ORIGIN` / `API_PUBLIC_URL` https
+- [ ] Stripe live + webhook
+- [ ] Migrations applied; SUPERADMIN created
+- [ ] Worker running
+- [ ] Swagger off in prod
+- [ ] Privacy + Terms pages live (`/privacy`, `/terms`)
+- [ ] `node scripts/check-prod-env.mjs` exit 0
 
 ## Create SUPERADMIN
 
@@ -25,23 +23,36 @@
 DATABASE_URL=... npm run make-superadmin -- you@example.com
 ```
 
-```sql
-UPDATE users SET platform_role = 'SUPERADMIN' WHERE email = 'you@example.com';
-```
-
 ## Deploy topology (I1)
 
 | Service | Notes |
 |---|---|
 | web | Next.js |
-| api | Fastify |
-| worker | BullMQ consumer |
-| postgres | managed |
+| api | Fastify · trust proxy |
+| worker | BullMQ · single active region preferred |
+| postgres | managed primary (+ optional replica) |
 | redis | managed |
-| meilisearch | optional but recommended |
+| meilisearch | recommended |
+
+Example: `docker-compose.prod.example.yml`
+
+## Hardening (v1.6)
+
+- Production env rejects weak JWT / insecure cookies / localhost CORS
+- HSTS, nosniff, frame deny, permissions-policy
+- Global rate limit tighter in prod; auth/hold still stricter
+- `/debug/*` disabled when `NODE_ENV=production`
+- Swagger only if `ENABLE_SWAGGER=true`
 
 ## Rollback
 
-- Feature flags: `booking_enabled`, city waves
-- Redeploy previous image tags
-- DB migrations are additive (0000, 0001) — avoid destructive rollback without backup
+- Redeploy previous images
+- Additive migrations only reverse with DBA plan
+- Feature-flag booking off if needed
+
+## SLO
+
+| Metric | Target |
+|---|---|
+| Overbooking | **0** |
+| Availability | 99.5%+ |

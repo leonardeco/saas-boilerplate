@@ -79,11 +79,19 @@ export default async function HomePage() {
 
       <section className="mt-16 rounded-2xl border border-slate-800 bg-slate-900/40 p-6 text-sm text-slate-300">
         <p>
-          <strong className="text-white">S1</strong> — Auth JWT · migraciones ·
-          catálogo premium · SEO ciudad/local · seed demo
+          <strong className="text-white">NightTable CO</strong> — marketplace +
+          SaaS · reservas · OAuth · PWA/Capacitor · listo para release
         </p>
         <p className="mt-2 text-slate-500">
-          Docs: docs/architecture/v2.md · Swagger API: /docs
+          <Link href="/privacy" className="text-cyan-400 hover:underline">
+            Privacidad
+          </Link>
+          {" · "}
+          <Link href="/terms" className="text-cyan-400 hover:underline">
+            Términos
+          </Link>
+          {" · "}
+          docs/runbooks/release-checklist.md
         </p>
       </section>
     </main>

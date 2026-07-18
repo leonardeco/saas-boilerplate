@@ -71,12 +71,19 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 - Deep link placeholders (assetlinks / AASA)
 - OTel full SDK upgrade path doc
 
+## v1.6 (done)
+
+- Production env hardening + check-prod-env script
+- Helmet/HSTS/security headers, swagger off in prod, trust proxy
+- Release checklist, store listing, SECURITY.md
+- Privacy + Terms pages, prod compose example
+
 ## Remaining backlog
 
-- Commit generated ios/android after first `cap add` (team decision)
-- Full @opentelemetry/sdk-node (optional, see otel-sdk-upgrade.md)
-- Meta template approval (ops)
-- App Store / Play listing assets
+- Commit generated ios/android after first `cap add`
+- Full @opentelemetry/sdk-node (optional)
+- Meta WA template approval + real legal entity copy
+- App Store / Play screenshots & binary upload
 
 
 

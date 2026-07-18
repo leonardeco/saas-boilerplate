@@ -97,6 +97,20 @@ npm run test:e2e -w @saas/e2e
 DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
 ```
 
+## Production release
+
+```bash
+# with prod env loaded:
+npm run check:prod-env
+```
+
+- [Release checklist](./docs/runbooks/release-checklist.md)
+- [Store listing](./docs/runbooks/store-listing.md)
+- [SECURITY.md](./SECURITY.md)
+- Legal pages: `/privacy` · `/terms`
+- Compose example: `docker-compose.prod.example.yml`
+
+
 ## Auth notes (v1.2)
 
 - **Cookie-only SPA**: web no longer stores tokens in `localStorage`.
