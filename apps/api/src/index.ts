@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
+import cookie from "@fastify/cookie";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { env } from "./env.js";
@@ -20,21 +21,26 @@ async function main() {
   const app = Fastify({
     logger: {
       level: env.NODE_ENV === "production" ? "info" : "debug",
-      redact: ["req.headers.authorization", "password", "passwordHash"],
+      redact: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        "password",
+        "passwordHash",
+        "refreshToken",
+        "accessToken",
+      ],
     },
   });
 
-  await app.register(helmet, {
-    contentSecurityPolicy: false,
-  });
+  await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cors, {
     origin: env.CORS_ORIGIN,
     credentials: true,
   });
+  await app.register(cookie);
   await app.register(rateLimit, {
     max: 200,
     timeWindow: "1 minute",
-    allowList: ["127.0.0.1"],
   });
   await app.register(jwtPlugin);
 
@@ -42,8 +48,8 @@ async function main() {
     openapi: {
       info: {
         title: "NightTable CO API",
-        description: "Food & Nightlife premium Colombia — full stack S0–S6",
-        version: "1.0.0",
+        description: "Food & Nightlife premium Colombia",
+        version: "1.1.0",
       },
       components: {
         securitySchemes: {
@@ -61,21 +67,16 @@ async function main() {
   app.get("/health", async () => ({
     ok: true,
     service: "nighttable-api",
-    version: "1.0.0",
+    version: "1.1.0",
     ts: new Date().toISOString(),
   }));
 
-  app.get("/ready", async (_req, reply) => {
-    try {
-      // soft readiness — DB optional check via env presence
-      if (!env.DATABASE_URL) {
-        return reply.status(503).send({ ok: false, reason: "no_database" });
-      }
-      return { ok: true };
-    } catch {
-      return reply.status(503).send({ ok: false });
-    }
-  });
+  app.get("/ready", async () => ({
+    ok: true,
+    database: Boolean(env.DATABASE_URL),
+    meili: Boolean(env.MEILI_HOST),
+    redis: Boolean(env.REDIS_URL),
+  }));
 
   await app.register(authRoutes, { prefix: "/auth" });
   await app.register(geoRoutes, { prefix: "/geo" });

@@ -21,6 +21,10 @@
 
 ## Create SUPERADMIN
 
+```bash
+DATABASE_URL=... npm run make-superadmin -- you@example.com
+```
+
 ```sql
 UPDATE users SET platform_role = 'SUPERADMIN' WHERE email = 'you@example.com';
 ```

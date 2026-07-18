@@ -85,10 +85,29 @@ UPDATE users SET platform_role = 'SUPERADMIN' WHERE email = 'tu@email.com';
 ## Tests
 
 ```bash
-npm test -w @saas/domain
-npm test -w @saas/contracts
-npm test -w @saas/api
+npm run test:unit
+# E2E (API + web running):
+npm run test:e2e -w @saas/e2e
+# or: cd apps/e2e && npx playwright install chromium && npm test
 ```
+
+## SUPERADMIN script
+
+```bash
+DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
+```
+
+## Auth notes (v1.1)
+
+- Login/register set **httpOnly cookies** (`nt_access`, `nt_refresh`) and still return JWT in JSON for SPA.
+- `credentials: "include"` on web fetch recommended.
+- Auth endpoints: **10 req/min**; booking hold: **20 req/min**.
+
+## Catalog search
+
+- Uses **Meilisearch** when `MEILI_HOST` is set (after worker reindex).
+- Falls back to **Postgres** automatically.
+
 
 ## Docs
 

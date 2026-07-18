@@ -10,9 +10,17 @@ const envSchema = z.object({
   API_HOST: z.string().default("0.0.0.0"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
   REDIS_URL: z.string().default("redis://localhost:6379"),
+  MEILI_HOST: z.string().optional(),
+  MEILI_MASTER_KEY: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().optional(),
   WEB_URL: z.string().default("http://localhost:3000"),
+  COOKIE_SECURE: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

@@ -13,6 +13,12 @@ import {
 } from "@saas/domain";
 import { withSlotLock } from "../lib/redis.js";
 import type { HoldRequest } from "@saas/contracts";
+import {
+  sendMail,
+  bookingHoldEmail,
+  bookingConfirmedEmail,
+  bookingCancelledEmail,
+} from "./email.service.js";
 
 export async function listSlots(venueId: string) {
   const now = new Date();
@@ -48,10 +54,21 @@ export async function createSlot(input: {
   return slot;
 }
 
-export async function holdReservation(
-  input: HoldRequest,
-  userId?: string,
-) {
+async function venueName(venueId: string) {
+  const v = await db.query.venues.findFirst({ where: eq(venues.id, venueId) });
+  return v?.name ?? "Local";
+}
+
+async function slotLabel(slotId: string) {
+  const [s] = await db
+    .select()
+    .from(availabilitySlots)
+    .where(eq(availabilitySlots.id, slotId))
+    .limit(1);
+  return s?.startsAt?.toISOString();
+}
+
+export async function holdReservation(input: HoldRequest, userId?: string) {
   const venue = await db.query.venues.findFirst({
     where: eq(venues.id, input.venueId),
   });
@@ -59,7 +76,7 @@ export async function holdReservation(
     throw new Error("BOOKING_DISABLED");
   }
 
-  return withSlotLock(input.slotId, async () => {
+  const reservation = await withSlotLock(input.slotId, async () => {
     const [slot] = await db
       .select()
       .from(availabilitySlots)
@@ -76,7 +93,7 @@ export async function holdReservation(
     });
     if (!check.ok) throw new Error(check.reason.toUpperCase());
 
-    const [reservation] = await db
+    const [row] = await db
       .insert(reservations)
       .values({
         venueId: input.venueId,
@@ -94,11 +111,25 @@ export async function holdReservation(
 
     await db
       .update(availabilitySlots)
-      .set({ reservedCount: sql`${availabilitySlots.reservedCount} + ${input.partySize}` })
+      .set({
+        reservedCount: sql`${availabilitySlots.reservedCount} + ${input.partySize}`,
+      })
       .where(eq(availabilitySlots.id, input.slotId));
 
-    return reservation;
+    return row!;
   });
+
+  const mail = bookingHoldEmail({
+    guestName: input.guestName,
+    venueName: venue.name,
+    partySize: input.partySize,
+    startsAt: await slotLabel(input.slotId),
+    holdExpiresAt: reservation.holdExpiresAt?.toISOString(),
+    reservationId: reservation.id,
+  });
+  void sendMail({ to: input.guestEmail, ...mail });
+
+  return reservation;
 }
 
 export async function confirmReservation(id: string, userId?: string) {
@@ -122,13 +153,23 @@ export async function confirmReservation(id: string, userId?: string) {
     .set({ status: "CONFIRMED", holdExpiresAt: null, updatedAt: new Date() })
     .where(eq(reservations.id, id))
     .returning();
+
+  const mail = bookingConfirmedEmail({
+    guestName: res.guestName,
+    venueName: await venueName(res.venueId),
+    partySize: res.partySize,
+    startsAt: await slotLabel(res.slotId),
+    reservationId: res.id,
+  });
+  void sendMail({ to: res.guestEmail, ...mail });
+
   return updated;
 }
 
-export async function cancelReservation(id: string, actor: {
-  userId?: string;
-  isStaff?: boolean;
-}) {
+export async function cancelReservation(
+  id: string,
+  actor: { userId?: string; isStaff?: boolean },
+) {
   const [res] = await db
     .select()
     .from(reservations)
@@ -141,8 +182,8 @@ export async function cancelReservation(id: string, actor: {
 
   assertTransition(res.status, "CANCELLED");
 
-  return withSlotLock(res.slotId, async () => {
-    const [updated] = await db
+  const updated = await withSlotLock(res.slotId, async () => {
+    const [row] = await db
       .update(reservations)
       .set({ status: "CANCELLED", updatedAt: new Date() })
       .where(eq(reservations.id, id))
@@ -156,8 +197,17 @@ export async function cancelReservation(id: string, actor: {
         })
         .where(eq(availabilitySlots.id, res.slotId));
     }
-    return updated;
+    return row;
   });
+
+  const mail = bookingCancelledEmail({
+    guestName: res.guestName,
+    venueName: await venueName(res.venueId),
+    reservationId: res.id,
+  });
+  void sendMail({ to: res.guestEmail, ...mail });
+
+  return updated;
 }
 
 async function expireHold(id: string, slotId: string, partySize: number) {

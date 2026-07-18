@@ -34,11 +34,20 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 | S5 | reviews + rating recalc, flag, admin curation/flags |
 | S6 | /ready, logging redact, runbook, CI unit tests |
 
-## Follow-ups (backlog)
+## Post S6 hardening (done)
 
-- Email/WhatsApp notifications on confirm
-- Meilisearch-backed catalog search (PG today)
-- E2E Playwright smoke
-- Cookie httpOnly auth instead of localStorage
-- Rate limit auth endpoints tighter
+- Email templates + Resend/dev log on hold/confirm/cancel
+- Meilisearch catalog search with Postgres fallback
+- httpOnly cookies (nt_access / nt_refresh) + Bearer still supported
+- Rate limits: auth 10/min, hold 20/min
+- Playwright smoke suite in apps/e2e
+- scripts/make-superadmin.mjs
+
+## Remaining backlog
+
+- WhatsApp Business notifications
+- Full cookie-only SPA (drop localStorage tokens)
+- CI job with Postgres service for integration tests
+- Playwright in CI with webServer
+
 

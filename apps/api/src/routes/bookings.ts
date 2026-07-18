@@ -42,28 +42,38 @@ export const bookingRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  app.post("/hold", async (request, reply) => {
-    const body = holdRequestSchema.safeParse(request.body);
-    if (!body.success) return reply.status(400).send({ error: body.error.flatten() });
+  app.post(
+    "/hold",
+    {
+      config: {
+        rateLimit: { max: 20, timeWindow: "1 minute" },
+      },
+    },
+    async (request, reply) => {
+      const body = holdRequestSchema.safeParse(request.body);
+      if (!body.success) {
+        return reply.status(400).send({ error: body.error.flatten() });
+      }
 
-    let userId: string | undefined;
-    try {
-      await request.jwtVerify();
-      userId = request.user.sub;
-    } catch {
-      /* guest hold allowed */
-    }
+      let userId: string | undefined;
+      try {
+        await request.jwtVerify();
+        userId = request.user.sub;
+      } catch {
+        /* guest hold allowed */
+      }
 
-    try {
-      const reservation = await holdReservation(body.data, userId);
-      return reply.status(201).send({ data: reservation });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "ERROR";
-      const status =
-        msg === "SLOT_LOCKED" || msg === "INSUFFICIENT_CAPACITY" ? 409 : 400;
-      return reply.status(status).send({ error: msg, code: msg });
-    }
-  });
+      try {
+        const reservation = await holdReservation(body.data, userId);
+        return reply.status(201).send({ data: reservation });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "ERROR";
+        const status =
+          msg === "SLOT_LOCKED" || msg === "INSUFFICIENT_CAPACITY" ? 409 : 400;
+        return reply.status(status).send({ error: msg, code: msg });
+      }
+    },
+  );
 
   app.post<{ Params: { id: string } }>(
     "/:id/confirm",

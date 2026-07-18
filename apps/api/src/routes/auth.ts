@@ -9,6 +9,11 @@ import {
   revokeRefreshToken,
   getUserById,
 } from "../services/auth.service.js";
+import {
+  setAuthCookies,
+  clearAuthCookies,
+  readRefreshFromRequest,
+} from "../lib/cookies.js";
 
 const registerSchema = z.object({
   name: z.string().min(2).max(100),
@@ -22,7 +27,17 @@ const loginSchema = z.object({
 });
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
-  app.post("/register", async (request, reply) => {
+  // Stricter rate limit on credential endpoints
+  const authLimit = {
+    config: {
+      rateLimit: {
+        max: 10,
+        timeWindow: "1 minute",
+      },
+    },
+  };
+
+  app.post("/register", authLimit, async (request, reply) => {
     const body = registerSchema.safeParse(request.body);
     if (!body.success) {
       return reply.status(400).send({ error: body.error.flatten() });
@@ -44,6 +59,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         { expiresIn: env.JWT_ACCESS_EXPIRES },
       );
       const refreshToken = await createRefreshToken(user.id);
+      setAuthCookies(reply, { accessToken, refreshToken });
 
       return reply.status(201).send({
         accessToken,
@@ -53,13 +69,15 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       });
     } catch (err: unknown) {
       if (err instanceof Error && err.message === "EMAIL_IN_USE") {
-        return reply.status(409).send({ error: "Email already in use", code: "EMAIL_IN_USE" });
+        return reply
+          .status(409)
+          .send({ error: "Email already in use", code: "EMAIL_IN_USE" });
       }
       throw err;
     }
   });
 
-  app.post("/login", async (request, reply) => {
+  app.post("/login", authLimit, async (request, reply) => {
     const body = loginSchema.safeParse(request.body);
     if (!body.success) {
       return reply.status(400).send({ error: body.error.flatten() });
@@ -76,14 +94,19 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         { expiresIn: env.JWT_ACCESS_EXPIRES },
       );
       const refreshToken = await createRefreshToken(user.id);
+      setAuthCookies(reply, { accessToken, refreshToken });
       return reply.send({ accessToken, refreshToken, user });
     } catch {
-      return reply.status(401).send({ error: "Invalid credentials", code: "INVALID_CREDENTIALS" });
+      return reply
+        .status(401)
+        .send({ error: "Invalid credentials", code: "INVALID_CREDENTIALS" });
     }
   });
 
-  app.post<{ Body: { refreshToken?: string } }>("/refresh", async (request, reply) => {
-    const refreshToken = request.body?.refreshToken;
+  app.post("/refresh", authLimit, async (request, reply) => {
+    const refreshToken = readRefreshFromRequest(
+      request as { cookies?: Record<string, string>; body?: unknown },
+    );
     if (!refreshToken) {
       return reply.status(400).send({ error: "refreshToken required" });
     }
@@ -99,20 +122,25 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         },
         { expiresIn: env.JWT_ACCESS_EXPIRES },
       );
+      setAuthCookies(reply, { accessToken, refreshToken: newRefreshToken });
       return reply.send({ accessToken, refreshToken: newRefreshToken });
     } catch {
+      clearAuthCookies(reply);
       return reply
         .status(401)
         .send({ error: "Invalid or expired refresh token", code: "INVALID_TOKEN" });
     }
   });
 
-  app.post<{ Body: { refreshToken?: string } }>(
+  app.post(
     "/logout",
     { preHandler: [app.authenticate] },
     async (request, reply) => {
-      const refreshToken = request.body?.refreshToken;
+      const refreshToken = readRefreshFromRequest(
+        request as { cookies?: Record<string, string>; body?: unknown },
+      );
       if (refreshToken) await revokeRefreshToken(refreshToken);
+      clearAuthCookies(reply);
       return reply.send({ message: "Logged out successfully" });
     },
   );
