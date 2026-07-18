@@ -102,13 +102,20 @@ DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
 ```bash
 # with prod env loaded:
 npm run check:prod-env
+npm run release -- 1.6.0   # prints tag commands
 ```
 
-- [Release checklist](./docs/runbooks/release-checklist.md)
-- [Store listing](./docs/runbooks/store-listing.md)
-- [SECURITY.md](./SECURITY.md)
-- Legal pages: `/privacy` · `/terms`
-- Compose example: `docker-compose.prod.example.yml`
+| Doc | |
+|---|---|
+| [Release checklist](./docs/runbooks/release-checklist.md) | Go-live steps |
+| [Deploy Render](./docs/runbooks/deploy-render.md) | `render.yaml` blueprint |
+| [Deploy Railway](./docs/runbooks/deploy-railway.md) | Docker + plugins |
+| [Store listing](./docs/runbooks/store-listing.md) | App Store / Play |
+| [CHANGELOG](./CHANGELOG.md) | Version history |
+| [SECURITY.md](./SECURITY.md) | Vulnerability reports |
+
+Legal: `/privacy` · `/terms` · Compose: `docker-compose.prod.example.yml`
+
 
 
 ## Auth notes (v1.2)

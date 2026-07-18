@@ -18,8 +18,10 @@
     "test:unit": "npm test -w @saas/domain && npm test -w @saas/contracts && npm test -w @saas/api && npm test -w @saas/db",
     "mobile:www": "npm run build:www -w @saas/mobile",
     "mobile:sync": "npm run cap:sync -w @saas/mobile",
-    "check:prod-env": "node scripts/check-prod-env.mjs"
+    "check:prod-env": "node scripts/check-prod-env.mjs",
+    "release": "node scripts/release.mjs"
   },
+
 
 
   "devDependencies": {

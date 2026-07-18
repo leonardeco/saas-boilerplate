@@ -5,7 +5,9 @@
 - [ ] `git status` clean on release branch / `main`
 - [ ] `npm run test:unit` green
 - [ ] CI green on GitHub Actions
-- [ ] CHANGELOG / version tag decided (`v1.6.0`)
+- [ ] CHANGELOG updated · run `npm run release -- 1.6.0`
+- [ ] Deploy config chosen: [Render](./deploy-render.md) or [Railway](./deploy-railway.md)
+
 
 ## 1. Secrets & env
 

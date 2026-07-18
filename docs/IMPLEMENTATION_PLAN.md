@@ -78,12 +78,20 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 - Release checklist, store listing, SECURITY.md
 - Privacy + Terms pages, prod compose example
 
-## Remaining backlog
+## v1.6.1 deploy packaging (done)
+
+- Production Dockerfiles (api/web/worker)
+- `render.yaml` blueprint + Railway tomls
+- Deploy runbooks Render/Railway
+- CHANGELOG + `npm run release`
+
+## Remaining backlog (ops)
 
 - Commit generated ios/android after first `cap add`
 - Full @opentelemetry/sdk-node (optional)
-- Meta WA template approval + real legal entity copy
-- App Store / Play screenshots & binary upload
+- Meta WA templates + legal entity copy
+- Store screenshots & binary upload
+- Point DNS + first production deploy
 
 
 

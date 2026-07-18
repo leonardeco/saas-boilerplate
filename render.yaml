@@ -1,0 +1,111 @@
+# Render Blueprint — NightTable CO
+# https://render.com/docs/blueprint-spec
+# Connect this repo and apply blueprint; set secrets in dashboard.
+
+services:
+  - type: web
+    name: nighttable-api
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: .
+    buildCommand: npm ci
+    startCommand: npx tsx apps/api/src/index.ts
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "true"
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: API_HOST
+        value: "0.0.0.0"
+      - key: API_PORT
+        value: "10000"
+      - key: REGION
+        value: oregon
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nighttable-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: nighttable-redis
+          type: redis
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: WEB_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: API_PUBLIC_URL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+
+  - type: web
+    name: nighttable-web
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: .
+    buildCommand: npm ci && npm run build -w @saas/web
+    startCommand: npm run start -w @saas/web
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_APP_NAME
+        value: NightTable CO
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+
+  - type: worker
+    name: nighttable-worker
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: .
+    buildCommand: npm ci
+    startCommand: npx tsx apps/worker/src/index.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REGION
+        value: oregon
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nighttable-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: nighttable-redis
+          type: redis
+          property: connectionString
+      - key: MEILI_HOST
+        sync: false
+      - key: MEILI_MASTER_KEY
+        sync: false
+      - key: GOOGLE_PLACES_API_KEY
+        sync: false
+
+  - type: redis
+    name: nighttable-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+
+databases:
+  - name: nighttable-db
+    plan: basic-256mb
+    region: oregon
+    postgresMajorVersion: "16"
