@@ -91,6 +91,7 @@ export default function ReservarPage() {
     try {
       const res = await apiFetch(`/bookings/${reservationId}/confirm`, {
         method: "POST",
+        body: JSON.stringify({}),
       });
       const data = await res.json();
       if (!res.ok) {
