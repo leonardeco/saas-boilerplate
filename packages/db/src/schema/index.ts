@@ -7,3 +7,5 @@ export * from "./ingestion.js";
 export * from "./inventory.js";
 export * from "./claims.js";
 export * from "./reviews.js";
+export * from "./oauth.js";
+

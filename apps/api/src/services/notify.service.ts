@@ -4,10 +4,7 @@ import {
   bookingConfirmedEmail,
   bookingCancelledEmail,
 } from "./email.service.js";
-import {
-  sendWhatsAppText,
-  bookingWhatsAppMessages,
-} from "./whatsapp.service.js";
+import { sendBookingWhatsApp } from "./whatsapp.service.js";
 
 export async function notifyBookingHold(input: {
   guestName: string;
@@ -23,15 +20,13 @@ export async function notifyBookingHold(input: {
   await sendMail({ to: input.guestEmail, ...mail });
 
   if (input.guestPhone) {
-    await sendWhatsAppText({
+    await sendBookingWhatsApp({
+      kind: "hold",
       to: input.guestPhone,
-      body: bookingWhatsAppMessages({
-        kind: "hold",
-        guestName: input.guestName,
-        venueName: input.venueName,
-        partySize: input.partySize,
-        startsAt: input.startsAt,
-      }),
+      guestName: input.guestName,
+      venueName: input.venueName,
+      partySize: input.partySize,
+      startsAt: input.startsAt,
     });
   }
 }
@@ -49,15 +44,13 @@ export async function notifyBookingConfirmed(input: {
   await sendMail({ to: input.guestEmail, ...mail });
 
   if (input.guestPhone) {
-    await sendWhatsAppText({
+    await sendBookingWhatsApp({
+      kind: "confirmed",
       to: input.guestPhone,
-      body: bookingWhatsAppMessages({
-        kind: "confirmed",
-        guestName: input.guestName,
-        venueName: input.venueName,
-        partySize: input.partySize,
-        startsAt: input.startsAt,
-      }),
+      guestName: input.guestName,
+      venueName: input.venueName,
+      partySize: input.partySize,
+      startsAt: input.startsAt,
     });
   }
 }
@@ -73,14 +66,12 @@ export async function notifyBookingCancelled(input: {
   await sendMail({ to: input.guestEmail, ...mail });
 
   if (input.guestPhone) {
-    await sendWhatsAppText({
+    await sendBookingWhatsApp({
+      kind: "cancelled",
       to: input.guestPhone,
-      body: bookingWhatsAppMessages({
-        kind: "cancelled",
-        guestName: input.guestName,
-        venueName: input.venueName,
-        partySize: 0,
-      }),
+      guestName: input.guestName,
+      venueName: input.venueName,
+      partySize: 0,
     });
   }
 }

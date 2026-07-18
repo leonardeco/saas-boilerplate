@@ -7,7 +7,10 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { env } from "./env.js";
 import { jwtPlugin } from "./plugins/jwt.js";
+import { metricsHook } from "./plugins/metrics-hook.js";
+import { metrics } from "./lib/metrics.js";
 import { authRoutes } from "./routes/auth.js";
+import { oauthRoutes } from "./routes/oauth.js";
 import { geoRoutes } from "./routes/geo.js";
 import { catalogRoutes } from "./routes/catalog.js";
 import { bookingRoutes } from "./routes/bookings.js";
@@ -16,6 +19,10 @@ import { reviewRoutes } from "./routes/reviews.js";
 import { billingRoutes } from "./routes/billing.js";
 import { adminRoutes } from "./routes/admin.js";
 import { venuesManageRoutes } from "./routes/venues-manage.js";
+
+const VERSION = "1.3.0";
+const REGION =
+  process.env.REGION ?? process.env.FLY_REGION ?? process.env.RAILWAY_REGION ?? "local";
 
 async function main() {
   const app = Fastify({
@@ -43,13 +50,14 @@ async function main() {
     timeWindow: "1 minute",
   });
   await app.register(jwtPlugin);
+  await app.register(metricsHook);
 
   await app.register(swagger, {
     openapi: {
       info: {
         title: "NightTable CO API",
         description: "Food & Nightlife premium Colombia",
-        version: "1.1.0",
+        version: VERSION,
       },
       components: {
         securitySchemes: {
@@ -67,18 +75,26 @@ async function main() {
   app.get("/health", async () => ({
     ok: true,
     service: "nighttable-api",
-    version: "1.1.0",
+    version: VERSION,
+    region: REGION,
     ts: new Date().toISOString(),
   }));
 
   app.get("/ready", async () => ({
     ok: true,
+    region: REGION,
     database: Boolean(env.DATABASE_URL),
     meili: Boolean(env.MEILI_HOST),
     redis: Boolean(env.REDIS_URL),
   }));
 
+  app.get("/metrics", async (_req, reply) => {
+    reply.header("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
+    return metrics.render();
+  });
+
   await app.register(authRoutes, { prefix: "/auth" });
+  await app.register(oauthRoutes, { prefix: "/auth/oauth" });
   await app.register(geoRoutes, { prefix: "/geo" });
   await app.register(catalogRoutes, { prefix: "/catalog" });
   await app.register(bookingRoutes, { prefix: "/bookings" });
@@ -89,7 +105,9 @@ async function main() {
   await app.register(venuesManageRoutes, { prefix: "/venues" });
 
   await app.listen({ port: env.API_PORT, host: env.API_HOST });
-  app.log.info(`NightTable API on ${env.API_HOST}:${env.API_PORT}`);
+  app.log.info(
+    `NightTable API v${VERSION} region=${REGION} on ${env.API_HOST}:${env.API_PORT}`,
+  );
 }
 
 main().catch((err) => {

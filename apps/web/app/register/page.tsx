@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/auth-client";
+import { OAuthButtons } from "@/components/oauth-buttons";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,6 +13,19 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [providers, setProviders] = useState<{
+    google: boolean;
+    github: boolean;
+  }>({ google: true, github: true });
+
+  useEffect(() => {
+    apiFetch("/auth/oauth/providers")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.data) setProviders(j.data);
+      })
+      .catch(() => undefined);
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,7 +58,15 @@ export default function RegisterPage() {
         ← Inicio
       </Link>
       <h1 className="mt-4 text-2xl font-bold text-white">Crear cuenta</h1>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <div className="mt-8">
+        <OAuthButtons providers={providers} />
+        <div className="my-6 flex items-center gap-3 text-xs text-slate-500">
+          <div className="h-px flex-1 bg-slate-800" />
+          o con email
+          <div className="h-px flex-1 bg-slate-800" />
+        </div>
+      </div>
+      <form onSubmit={onSubmit} className="space-y-4">
         <label className="block text-sm text-slate-300">
           Nombre
           <input

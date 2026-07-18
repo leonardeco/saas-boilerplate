@@ -107,7 +107,24 @@ DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
 ## Notifications
 
 - **Email**: Resend or console preview
-- **WhatsApp**: Meta Cloud API when `WHATSAPP_ENABLED=true` + token + phone number id
+- **WhatsApp**: free-form or **approved Meta templates** (`WHATSAPP_USE_TEMPLATES`)
+- See [docs/runbooks/whatsapp-templates.md](./docs/runbooks/whatsapp-templates.md)
+
+## OAuth
+
+- Google + GitHub: `/auth/oauth/{provider}/start` → callback sets cookies → `/dashboard`
+- UI buttons on `/login` and `/register`
+- Configure `GOOGLE_*` / `GITHUB_*` + `API_PUBLIC_URL`
+
+## Observability
+
+- `GET /metrics` — Prometheus text (requests, latency, region)
+- `GET /health` includes `region` + `version`
+
+## Multi-region
+
+- See [docs/runbooks/multi-region.md](./docs/runbooks/multi-region.md)
+- Set `REGION` per deploy; shared Postgres; single active worker
 
 ## Catalog search
 
@@ -116,6 +133,7 @@ DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
 ## CI
 
 - `unit` · `integration` (Postgres + Redis + migrate/seed) · `e2e` (API + Web + Playwright)
+
 
 
 

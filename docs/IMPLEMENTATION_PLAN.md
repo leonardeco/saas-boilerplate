@@ -50,11 +50,18 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 - CI: unit + Postgres/Redis integration + Playwright e2e
 - Domain concurrency simulation + optional DB hold race
 
+## v1.3 (done)
+
+- WhatsApp approved templates (Meta) + fallback text
+- OAuth Google/GitHub API + login/register UI
+- Prometheus `/metrics` + request hooks (OTel-ready labels)
+- Multi-region runbook + REGION on health
+
 ## Remaining backlog
 
-- Template WhatsApp messages (approved Meta templates)
-- OAuth social login UI
-- Observability (OTel metrics)
-- Multi-region deploy
+- Full OpenTelemetry SDK exporter (OTLP)
+- Read replicas for catalog
+- Mobile apps
+
 
 

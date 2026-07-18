@@ -1,16 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/auth-client";
+import { OAuthButtons } from "@/components/oauth-buttons";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const search = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [providers, setProviders] = useState<{
+    google: boolean;
+    github: boolean;
+  }>({ google: true, github: true });
+
+  useEffect(() => {
+    const err = search.get("error");
+    if (err) setError(err);
+    apiFetch("/auth/oauth/providers")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.data) setProviders(j.data);
+      })
+      .catch(() => undefined);
+  }, [search]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +45,6 @@ export default function LoginPage() {
         );
         return;
       }
-      // Tokens live only in httpOnly cookies
       router.push("/dashboard");
       router.refresh();
     } catch {
@@ -39,15 +55,16 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto max-w-md px-6 py-16">
-      <Link href="/" className="text-sm text-cyan-400">
-        ← Inicio
-      </Link>
-      <h1 className="mt-4 text-2xl font-bold text-white">Iniciar sesión</h1>
-      <p className="mt-2 text-xs text-slate-500">
-        Sesión por cookies httpOnly (sin tokens en el navegador).
-      </p>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+    <>
+      <div className="mt-8">
+        <OAuthButtons providers={providers} />
+        <div className="my-6 flex items-center gap-3 text-xs text-slate-500">
+          <div className="h-px flex-1 bg-slate-800" />
+          o con email
+          <div className="h-px flex-1 bg-slate-800" />
+        </div>
+      </div>
+      <form onSubmit={onSubmit} className="space-y-4">
         <label className="block text-sm text-slate-300">
           Email
           <input
@@ -78,6 +95,23 @@ export default function LoginPage() {
           {loading ? "…" : "Entrar"}
         </button>
       </form>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <main className="mx-auto max-w-md px-6 py-16">
+      <Link href="/" className="text-sm text-cyan-400">
+        ← Inicio
+      </Link>
+      <h1 className="mt-4 text-2xl font-bold text-white">Iniciar sesión</h1>
+      <p className="mt-2 text-xs text-slate-500">
+        Sesión por cookies httpOnly · OAuth Google/GitHub
+      </p>
+      <Suspense fallback={<p className="mt-8 text-slate-500">Cargando…</p>}>
+        <LoginForm />
+      </Suspense>
       <p className="mt-4 text-sm text-slate-400">
         ¿Sin cuenta?{" "}
         <Link href="/register" className="text-cyan-400">
