@@ -15,7 +15,7 @@
     "db:seed": "npm run db:seed -w @saas/db",
     "make-superadmin": "node scripts/make-superadmin.mjs",
     "test:e2e": "npm test -w @saas/e2e",
-    "test:unit": "npm test -w @saas/domain && npm test -w @saas/contracts && npm test -w @saas/api"
+    "test:unit": "npm test -w @saas/domain && npm test -w @saas/contracts && npm test -w @saas/api && npm test -w @saas/db"
   },
   "devDependencies": {
     "turbo": "^2.3.3",

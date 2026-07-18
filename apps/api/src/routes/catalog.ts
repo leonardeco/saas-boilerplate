@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { and, eq } from "drizzle-orm";
-import { db, venues, geoCities } from "@saas/db";
+import { dbRead, venues, geoCities, usingReadReplica } from "@saas/db";
 import { searchQuerySchema } from "@saas/contracts";
 import { searchCatalog } from "../services/catalog-search.service.js";
 
@@ -15,7 +15,9 @@ export const catalogRoutes: FastifyPluginAsync = async (app) => {
       return await searchCatalog(parsed.data);
     } catch (err) {
       if (err instanceof Error && err.message === "CITY_NOT_FOUND") {
-        return reply.status(404).send({ error: "City not found", code: "CITY_NOT_FOUND" });
+        return reply
+          .status(404)
+          .send({ error: "City not found", code: "CITY_NOT_FOUND" });
       }
       throw err;
     }
@@ -24,14 +26,14 @@ export const catalogRoutes: FastifyPluginAsync = async (app) => {
   app.get<{ Params: { city: string; slug: string } }>(
     "/:city/:slug",
     async (request, reply) => {
-      const city = await db.query.geoCities.findFirst({
+      const city = await dbRead.query.geoCities.findFirst({
         where: eq(geoCities.slug, request.params.city),
       });
       if (!city) {
         return reply.status(404).send({ error: "City not found" });
       }
 
-      const venue = await db.query.venues.findFirst({
+      const venue = await dbRead.query.venues.findFirst({
         where: and(
           eq(venues.slug, request.params.slug),
           eq(venues.cityId, city.id),
@@ -48,6 +50,7 @@ export const catalogRoutes: FastifyPluginAsync = async (app) => {
           citySlug: city.slug,
           cityName: city.name,
         },
+        meta: { db: usingReadReplica() ? "replica" : "primary" },
       };
     },
   );

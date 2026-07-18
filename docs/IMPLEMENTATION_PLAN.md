@@ -57,11 +57,18 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 - Prometheus `/metrics` + request hooks (OTel-ready labels)
 - Multi-region runbook + REGION on health
 
+## v1.4 (done)
+
+- OTLP/HTTP JSON traces (lite) + traceparent + /debug/spans
+- DATABASE_READ_URL for catalog/geo (`dbRead`)
+- PWA manifest + service worker + mobile API docs
+- Touch-safe CSS / safe-area
+
 ## Remaining backlog
 
-- Full OpenTelemetry SDK exporter (OTLP)
-- Read replicas for catalog
-- Mobile apps
+- Native Capacitor shell
+- Full @opentelemetry/sdk-node auto-instrumentation
+- Meta template approval (ops)
 
 
 

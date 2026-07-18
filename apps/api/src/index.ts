@@ -8,7 +8,9 @@ import swaggerUi from "@fastify/swagger-ui";
 import { env } from "./env.js";
 import { jwtPlugin } from "./plugins/jwt.js";
 import { metricsHook } from "./plugins/metrics-hook.js";
+import { otelHook } from "./plugins/otel-hook.js";
 import { metrics } from "./lib/metrics.js";
+import { recentSpans } from "./lib/otel.js";
 import { authRoutes } from "./routes/auth.js";
 import { oauthRoutes } from "./routes/oauth.js";
 import { geoRoutes } from "./routes/geo.js";
@@ -19,8 +21,9 @@ import { reviewRoutes } from "./routes/reviews.js";
 import { billingRoutes } from "./routes/billing.js";
 import { adminRoutes } from "./routes/admin.js";
 import { venuesManageRoutes } from "./routes/venues-manage.js";
+import { usingReadReplica } from "@saas/db";
 
-const VERSION = "1.3.0";
+const VERSION = "1.4.0";
 const REGION =
   process.env.REGION ?? process.env.FLY_REGION ?? process.env.RAILWAY_REGION ?? "local";
 
@@ -51,6 +54,7 @@ async function main() {
   });
   await app.register(jwtPlugin);
   await app.register(metricsHook);
+  await app.register(otelHook);
 
   await app.register(swagger, {
     openapi: {
@@ -84,14 +88,21 @@ async function main() {
     ok: true,
     region: REGION,
     database: Boolean(env.DATABASE_URL),
+    readReplica: usingReadReplica(),
     meili: Boolean(env.MEILI_HOST),
     redis: Boolean(env.REDIS_URL),
+    otel: process.env.OTEL_ENABLED === "true",
   }));
 
   app.get("/metrics", async (_req, reply) => {
     reply.header("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
     return metrics.render();
   });
+
+  // Debug recent spans (dev only)
+  if (env.NODE_ENV !== "production") {
+    app.get("/debug/spans", async () => ({ data: recentSpans().slice(-20) }));
+  }
 
   await app.register(authRoutes, { prefix: "/auth" });
   await app.register(oauthRoutes, { prefix: "/auth/oauth" });

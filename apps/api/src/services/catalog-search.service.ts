@@ -1,8 +1,9 @@
 import { and, eq, gte, desc, inArray } from "drizzle-orm";
-import { db, venues, geoCities } from "@saas/db";
+import { dbRead, venues, geoCities, usingReadReplica } from "@saas/db";
 import { createSearchClient, VENUES_INDEX } from "@saas/search";
 import type { SearchQuery } from "@saas/contracts";
 import { env } from "../env.js";
+import { metrics } from "../lib/metrics.js";
 
 export type CatalogHit = {
   id: string;
@@ -33,7 +34,7 @@ export async function searchCatalog(q: SearchQuery): Promise<{
   data: CatalogHit[];
   meta: Record<string, unknown>;
 }> {
-  const city = await db.query.geoCities.findFirst({
+  const city = await dbRead.query.geoCities.findFirst({
     where: eq(geoCities.slug, q.city),
   });
   if (!city) {
@@ -41,17 +42,38 @@ export async function searchCatalog(q: SearchQuery): Promise<{
     throw err;
   }
 
+  metrics.inc("catalog_search_total", {
+    replica: usingReadReplica() ? "read" : "primary",
+  });
+
   // Prefer Meilisearch when configured
   if (env.MEILI_HOST) {
     try {
       const meili = await searchMeili(q, city.slug);
-      if (meili) return meili;
+      if (meili) {
+        metrics.inc("catalog_search_source_total", { source: "meili" });
+        return {
+          ...meili,
+          meta: {
+            ...meili.meta,
+            db: usingReadReplica() ? "replica" : "primary",
+          },
+        };
+      }
     } catch (e) {
       console.warn("[catalog] Meili fallback to Postgres", e);
     }
   }
 
-  return searchPostgres(q, city.id, city.slug);
+  const pg = await searchPostgres(q, city.id, city.slug);
+  metrics.inc("catalog_search_source_total", { source: "postgres" });
+  return {
+    ...pg,
+    meta: {
+      ...pg.meta,
+      db: usingReadReplica() ? "replica" : "primary",
+    },
+  };
 }
 
 async function searchMeili(q: SearchQuery, citySlug: string) {
@@ -103,7 +125,7 @@ async function searchMeili(q: SearchQuery, citySlug: string) {
     };
   }
 
-  const rows = await db.select().from(venues).where(inArray(venues.id, ids));
+  const rows = await dbRead.select().from(venues).where(inArray(venues.id, ids));
   const byId = new Map(rows.map((r) => [r.id, r]));
 
   const data: CatalogHit[] = hits
@@ -170,7 +192,7 @@ async function searchPostgres(
   }
 
   const offset = (q.page - 1) * q.pageSize;
-  const rows = await db
+  const rows = await dbRead
     .select()
     .from(venues)
     .where(and(...conditions))

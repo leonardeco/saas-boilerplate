@@ -1,0 +1,20 @@
+{
+  "name": "NightTable CO",
+  "short_name": "NightTable",
+  "description": "Food & Nightlife premium en Colombia — descubre y reserva",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "lang": "es-CO",
+  "categories": ["food", "lifestyle", "travel"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

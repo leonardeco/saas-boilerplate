@@ -119,7 +119,23 @@ DATABASE_URL=postgresql://... npm run make-superadmin -- you@email.com
 ## Observability
 
 - `GET /metrics` — Prometheus text (requests, latency, region)
-- `GET /health` includes `region` + `version`
+- `GET /health` — `version`, `region`
+- **OTLP traces** — set `OTEL_ENABLED=true` + `OTEL_EXPORTER_OTLP_ENDPOINT`  
+  See [docs/runbooks/otel.md](./docs/runbooks/otel.md)
+
+## Read replicas
+
+```env
+DATABASE_READ_URL=postgresql://…@replica/…
+```
+
+Catalog + geo use `dbRead`. Bookings/auth always primary.  
+Docs: [docs/runbooks/read-replicas.md](./docs/runbooks/read-replicas.md)
+
+## PWA / Mobile
+
+- Installable web app: `manifest.webmanifest` + service worker (prod)
+- Mobile client guide: [docs/mobile-api.md](./docs/mobile-api.md)
 
 ## Multi-region
 
