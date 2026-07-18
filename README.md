@@ -1,99 +1,102 @@
 # NightTable CO
 
-**Food & Nightlife premium en Colombia** — marketplace de descubrimiento y reservas + SaaS multi-sede para locales.
+**Food & Nightlife premium en Colombia** — marketplace + SaaS multi-sede + reservas + ingestión + reviews.
 
-> Reescritura del monorepo [saas-boilerplate](https://github.com/leonardeco/saas-boilerplate) según **Arquitectura v2** (proceso `full-dev-team` / SKILLS-GROK).
+Repo: [leonardeco/saas-boilerplate](https://github.com/leonardeco/saas-boilerplate)  
+Proceso: `full-dev-team` (SKILLS-GROK) · Arquitectura v2
 
-## Posicionamiento
+## Stack
 
-| Código | Decisión |
-|---|---|
-| P4 | Híbrido: marketplace + SaaS + booking + reviews + billing + nightlife |
-| B5+B2+B3 | Premium · Food & Nightlife · noche de primer nivel |
-| F-Full | Alcance v1 completo (flags por módulo) |
-| G2 | Catálogo nacional + activación por olas de ciudad |
-| D5 | Ingestión multi-provider (Places, OSM, partners, curación) |
-| T2 | Organization (cadena) → Venue (sede) |
-| S1 | TypeScript · Next · Fastify · PG · Redis · Meili · BullMQ |
-| I1 | Railway/Render + managed PG/Redis |
+TypeScript · Next.js 15 · Fastify 5 · PostgreSQL · Redis · Meilisearch · BullMQ · Stripe · Drizzle
 
 ## Monorepo
 
 ```
-apps/
-  web/       Next.js 15 — SEO + panel (S0: home + ciudades)
-  api/       Fastify 5  — REST (S0: /health + /geo)
-  worker/    BullMQ     — ingestión y side-effects
+apps/web       Discovery SEO, reserva, panel, admin
+apps/api       Auth, catalog, bookings, claims, reviews, billing, admin
+apps/worker    Ingestión (mock/OSM/Places) + publish + reindex
 packages/
-  domain/    Reglas puras (quality, booking, normalize) + tests
-  contracts/ Zod compartido FE/API
-  db/        Drizzle schema (geo, orgs, venues) + seed CO
-  search/    Cliente Meilisearch
-  ui/        Componentes base
-docs/
-  architecture/v2.md
-  adr/0001…0006
-  domain/contexts.md
+  domain       quality, booking machine, normalize
+  contracts    Zod shared
+  db           schema + migrations + seeds
+  search       Meilisearch client
+  ui           primitives
 ```
 
 ## Quick start
 
 ```bash
-# Prereqs: Node >= 20, Docker
 cp .env.example .env
-npm install
+# JWT secrets ≥ 32 chars
 
-# Infra local
 docker compose up postgres redis meilisearch -d
+npm install
+npm run db:migrate -w @saas/db
+npm run db:seed -w @saas/db
 
-# Tests de dominio (sin DB)
-npm test -w @saas/domain
-npm test -w @saas/contracts
-
-# API + Web
 npm run dev -w @saas/api
+npm run dev -w @saas/worker
 npm run dev -w @saas/web
 ```
 
-| Servicio | URL |
+| URL | |
 |---|---|
 | Web | http://localhost:3000 |
-| API health | http://localhost:3001/health |
-| Geo cities | http://localhost:3001/geo/cities |
-| Meili | http://localhost:7700 |
+| API docs | http://localhost:3001/docs |
+| Health | http://localhost:3001/health |
 
-## Sprint actual: S1 Auth + Catalog
+## Features (S0–S6)
 
-### S0
-- [x] Arquitectura v2 + ADRs + monorepo scaffold
-- [x] Domain TDD · contracts · compose (PG/Redis/Meili)
+| Sprint | Status |
+|---|---|
+| S0 Foundation | done |
+| S1 Auth + catalog SEO | done |
+| S2 Ingestion pipeline | done |
+| S3 Booking HOLD/confirm + locks | done |
+| S4 Claim + panel + Stripe hooks | done |
+| S5 Reviews + admin curation | done |
+| S6 Hardening / runbook | done |
 
-### S1
-- [x] Auth JWT: register / login / refresh / logout / me
-- [x] Migración SQL `0000_init` + seed geo + planes + venues demo
-- [x] API catálogo: `GET /catalog/search`, `GET /catalog/:city/:slug`
-- [x] SEO: `/co/[city]`, `/co/[city]/[slug]` · login/register
-- [x] CI GitHub Actions (unit tests)
-- [ ] Stripe checkout completo (S4 billing polish)
-- [ ] Ingestión providers (S2)
-- [ ] Booking engine con locks (S3)
+### API map
 
-### DB local
+- `POST /auth/*` — register, login, refresh, logout, me
+- `GET /geo/cities`
+- `GET /catalog/search` · `GET /catalog/:city/:slug`
+- `POST /bookings/hold` · `POST /bookings/:id/confirm` · agenda/mine
+- `POST /claims` · admin approve/reject
+- `POST /reviews` · `GET /reviews/venue/:id`
+- `GET /billing/plans` · checkout/portal/webhook
+- `POST /admin/ingestion` · flags · curation
+- `GET /venues/mine` · `PATCH /venues/:id`
+
+### Web routes
+
+- `/` · `/co/[city]` · `/co/[city]/[slug]` · `/reservar`
+- `/login` · `/register` · `/mis-reservas`
+- `/dashboard` · `/dashboard/agenda/[venueId]` · `/dashboard/billing`
+- `/admin`
+
+## SUPERADMIN
+
+```sql
+UPDATE users SET platform_role = 'SUPERADMIN' WHERE email = 'tu@email.com';
+```
+
+## Tests
 
 ```bash
-docker compose up postgres redis meilisearch -d
-# completa JWT secrets en .env (min 32 chars)
-npm run db:migrate -w @saas/db
-npm run db:seed -w @saas/db
+npm test -w @saas/domain
+npm test -w @saas/contracts
+npm test -w @saas/api
 ```
 
 ## Docs
 
-- [Arquitectura v2](./docs/architecture/v2.md)
+- [Architecture v2](./docs/architecture/v2.md)
 - [ADRs](./docs/adr/)
-- [Dominios](./docs/domain/contexts.md)
-- [Plan de implementación](./docs/IMPLEMENTATION_PLAN.md)
+- [Implementation plan](./docs/IMPLEMENTATION_PLAN.md)
+- [Launch runbook](./docs/runbooks/launch.md)
 
-## Licencia
+## License
 
 MIT

@@ -20,7 +20,13 @@ export default async function HomePage() {
         <p className="text-sm font-medium uppercase tracking-widest text-cyan-400">
           NightTable CO
         </p>
-        <nav className="flex gap-4 text-sm">
+        <nav className="flex flex-wrap gap-4 text-sm">
+          <Link href="/dashboard" className="text-slate-300 hover:text-white">
+            Panel
+          </Link>
+          <Link href="/admin" className="text-slate-300 hover:text-white">
+            Admin
+          </Link>
           <Link href="/login" className="text-slate-300 hover:text-white">
             Entrar
           </Link>

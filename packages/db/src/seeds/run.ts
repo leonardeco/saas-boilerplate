@@ -5,9 +5,17 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
-import { geoCities, geoDepartments, venues, plans } from "../schema/index.js";
+import {
+  geoCities,
+  geoDepartments,
+  venues,
+  plans,
+  availabilitySlots,
+  featureFlags,
+} from "../schema/index.js";
 import { COLOMBIA_MAJOR_CITIES } from "./geo-co.js";
 import { DEMO_VENUES, demoQuality } from "./demo-venues.js";
+import { upcomingSlots } from "./demo-slots.js";
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -133,6 +141,50 @@ async function main() {
       console.log(`+ venue ${v.slug} premium=${q.isPublishablePremium}`);
     } else {
       console.log(`= venue ${v.slug}`);
+    }
+  }
+
+  // Slots for booking-enabled demo venues
+  const bookable = await db
+    .select()
+    .from(venues)
+    .where(eq(venues.bookingEnabled, true));
+
+  for (const v of bookable) {
+    const existingSlots = await db
+      .select()
+      .from(availabilitySlots)
+      .where(eq(availabilitySlots.venueId, v.id))
+      .limit(1);
+    if (existingSlots[0]) {
+      console.log(`= slots ${v.slug}`);
+      continue;
+    }
+    for (const s of upcomingSlots(5)) {
+      await db.insert(availabilitySlots).values({
+        venueId: v.id,
+        startsAt: s.startsAt,
+        endsAt: s.endsAt,
+        capacity: s.capacity,
+        label: s.label,
+      });
+    }
+    console.log(`+ slots ${v.slug}`);
+  }
+
+  for (const flag of [
+    { key: "booking_enabled", enabled: 1, description: "Global booking switch" },
+    { key: "premium_only_default", enabled: 1, description: "B5 default filter" },
+    { key: "ingestion_osm", enabled: 1, description: "Allow OSM provider" },
+  ]) {
+    const existing = await db
+      .select()
+      .from(featureFlags)
+      .where(eq(featureFlags.key, flag.key))
+      .limit(1);
+    if (!existing[0]) {
+      await db.insert(featureFlags).values(flag);
+      console.log(`+ flag ${flag.key}`);
     }
   }
 

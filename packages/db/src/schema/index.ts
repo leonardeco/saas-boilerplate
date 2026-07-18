@@ -3,3 +3,7 @@ export * from "./organizations.js";
 export * from "./venues.js";
 export * from "./tokens.js";
 export * from "./subscriptions.js";
+export * from "./ingestion.js";
+export * from "./inventory.js";
+export * from "./claims.js";
+export * from "./reviews.js";

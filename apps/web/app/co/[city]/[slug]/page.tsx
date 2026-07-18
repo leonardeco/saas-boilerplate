@@ -130,18 +130,54 @@ export default async function VenuePage({ params }: Props) {
         )}
       </dl>
 
-      <div className="mt-8">
+      <div className="mt-8 flex flex-wrap gap-3">
         {venue.bookingEnabled ? (
-          <p className="rounded-lg border border-emerald-800/40 bg-emerald-950/30 p-4 text-emerald-200">
-            Reservas online: motor de booking llega en S3. Este local ya está
-            marcado <code>booking_enabled</code>.
-          </p>
+          <Link
+            href={`/co/${city}/${slug}/reservar`}
+            className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950"
+          >
+            Reservar mesa
+          </Link>
         ) : (
-          <p className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 text-slate-300">
-            Aún no acepta reserva online en NightTable. Claim del local en S4.
+          <p className="rounded-lg border border-slate-700 bg-slate-900/50 p-4 text-sm text-slate-300">
+            Aún no acepta reserva online. Puedes reclamar el local si eres el
+            dueño (API <code>/claims</code>).
           </p>
         )}
       </div>
+
+      <ReviewsBlock venueId={venue.id} />
     </main>
+  );
+}
+
+async function ReviewsBlock({ venueId }: { venueId: string }) {
+  let reviews: Array<{ id: string; stars: number; body: string | null }> = [];
+  try {
+    const json = await fetchJson<{
+      data: Array<{ id: string; stars: number; body: string | null }>;
+    }>(`/reviews/venue/${venueId}`);
+    reviews = json.data;
+  } catch {
+    reviews = [];
+  }
+  return (
+    <section className="mt-12">
+      <h2 className="text-lg font-semibold text-white">Reseñas NightTable</h2>
+      <ul className="mt-4 space-y-2">
+        {reviews.map((r) => (
+          <li
+            key={r.id}
+            className="rounded-lg border border-slate-800 px-3 py-2 text-sm text-slate-300"
+          >
+            {"★".repeat(r.stars)}
+            {r.body ? ` — ${r.body}` : ""}
+          </li>
+        ))}
+        {reviews.length === 0 && (
+          <li className="text-slate-500">Sin reseñas aún</li>
+        )}
+      </ul>
+    </section>
   );
 }

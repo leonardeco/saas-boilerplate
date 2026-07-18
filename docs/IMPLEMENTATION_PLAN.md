@@ -24,8 +24,21 @@ See conversation full-dev-team plan (tracks T0–T7, sprints S0–S6).
 4. Login/register UI
 5. CI unit tests
 
-## Next: S2
+## S2–S6 (completed)
 
-1. Ingestion providers (mock + Places/OSM adapters)
-2. Worker pipeline publish + reindex Meili
-3. Admin trigger SUPERADMIN
+| Sprint | Delivered |
+|---|---|
+| S2 | mock/OSM/Places providers, publish pipeline, reindex, admin enqueue |
+| S3 | slots, HOLD/confirm/cancel, Redis locks, reservar UI, agenda |
+| S4 | claim flow, venues panel, Stripe checkout/portal/webhook stubs |
+| S5 | reviews + rating recalc, flag, admin curation/flags |
+| S6 | /ready, logging redact, runbook, CI unit tests |
+
+## Follow-ups (backlog)
+
+- Email/WhatsApp notifications on confirm
+- Meilisearch-backed catalog search (PG today)
+- E2E Playwright smoke
+- Cookie httpOnly auth instead of localStorage
+- Rate limit auth endpoints tighter
+
