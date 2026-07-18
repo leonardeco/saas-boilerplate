@@ -1,6 +1,7 @@
-# Render Blueprint — NightTable CO
-# https://render.com/docs/blueprint-spec
-# Connect this repo and apply blueprint; set secrets in dashboard.
+# Render Blueprint — NightTable CO v1.6
+# Dashboard: New → Blueprint → this repo
+# After apply: set all "sync: false" vars, then redeploy API/Web/Worker.
+# Docs: docs/runbooks/first-deploy-render.md
 
 services:
   - type: web
@@ -10,7 +11,8 @@ services:
     region: oregon
     rootDir: .
     buildCommand: npm ci
-    startCommand: npx tsx apps/api/src/index.ts
+    # Render injects PORT — map it to API_PORT
+    startCommand: sh -c "export API_PORT=${PORT:-10000}; npx tsx apps/api/src/index.ts"
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -21,8 +23,6 @@ services:
         value: "true"
       - key: API_HOST
         value: "0.0.0.0"
-      - key: API_PORT
-        value: "10000"
       - key: REGION
         value: oregon
       - key: DATABASE_URL
@@ -38,6 +38,7 @@ services:
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
+      # Set these AFTER first blueprint create (use real https URLs from Render)
       - key: WEB_URL
         sync: false
       - key: CORS_ORIGIN
@@ -51,6 +52,14 @@ services:
       - key: RESEND_API_KEY
         sync: false
       - key: EMAIL_FROM
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
         sync: false
 
   - type: web

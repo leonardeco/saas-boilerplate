@@ -116,7 +116,14 @@ npm run release -- 1.6.0   # prints tag commands
 
 Legal: `/privacy` · `/terms` · Compose: `docker-compose.prod.example.yml`  
 **Production env template:** [`.env.production.example`](./.env.production.example)  
-**Release notes:** [docs/releases/v1.6.0.md](./docs/releases/v1.6.0.md)
+**Release notes:** [docs/releases/v1.6.0.md](./docs/releases/v1.6.0.md)  
+**Primer deploy (Render):** [docs/runbooks/first-deploy-render.md](./docs/runbooks/first-deploy-render.md)
+
+```bash
+npm run gen:secrets                    # JWT / Meili keys
+npm run smoke:prod -- https://api…     # health/ready/geo
+```
+
 
 
 

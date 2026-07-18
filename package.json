@@ -19,8 +19,11 @@
     "mobile:www": "npm run build:www -w @saas/mobile",
     "mobile:sync": "npm run cap:sync -w @saas/mobile",
     "check:prod-env": "node scripts/check-prod-env.mjs",
-    "release": "node scripts/release.mjs"
+    "release": "node scripts/release.mjs",
+    "gen:secrets": "node scripts/gen-secrets.mjs",
+    "smoke:prod": "node scripts/smoke-prod.mjs"
   },
+
 
 
 
